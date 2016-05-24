@@ -9,6 +9,7 @@
 #include "oled_main.h"
 #include "hal_type.h"
 #include "hal_uart_cc2530.h"
+#include "hal_rtc_ds1302.h"
 /*****************************************************************************
 宏定义
 ******************************************************************************/
@@ -94,6 +95,7 @@ void Find_Hign_Low_BP();
 void main(void)
 {
        int i;
+       RTCStruct_t RTCStruct;
        WDTCTL = WDTPW + WDTHOLD;                //关闭看门狗电路
        Device_status = DEVICE_WAIT;             //默认普通显示状态
        Init_Clock();
@@ -101,6 +103,7 @@ void main(void)
        Init_Port2();
        P2OUT &= ~BIT4;
        UART1_Config_Init();                     // UART-CC2530初始化
+       HalRTCInit();                            // DS1302 初始化
        Init_Port4();
        Init_Port6();                             
        //VALVE_OFF();                             //通道0 控制电磁阀

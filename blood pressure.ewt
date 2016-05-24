@@ -1957,6 +1957,12 @@
   <group>
     <name>Driver</name>
     <file>
+      <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\Driver\hal_type.h</name>
     </file>
     <file>

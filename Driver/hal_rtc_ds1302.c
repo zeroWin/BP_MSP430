@@ -42,26 +42,15 @@
  *                                             INCLUDES
  ***************************************************************************************************/
 #include "hal_rtc_ds1302.h"
-#include "hal_oled.h"
-
-#if (defined HAL_RTC_DS1302) && (HAL_RTC_DS1302 == TRUE)
+#include  <msp430x14x.h>
 /***************************************************************************************************
  *                                             CONSTANTS
  ***************************************************************************************************/
-/* RTC SCLK is at P1.6 */
-#define RTC_SCLK_PORT 1
-#define RTC_SCLK_PIN  6
-
-/* RTC I/O is at P1.7 */
-#define RTC_IO_PORT   1
-#define RTC_IO_PIN    7
-
-/* RTC CE is at P2.0 */
-#define RTC_CE_PORT  2
-#define RTC_CE_PIN   0
-
-/* Data read IO P1.7*/
-#define DS1302_IO_READ_HIGH 0x80
+/* RTC SCLK is at P2.7 */
+/* RTC I/O is at P2.6 */
+/* RTC CE is at P2.5 */
+/* Data read IO P2.6*/
+#define DS1302_IO_READ_HIGH 0x40
 
 /* RTC register address 
  * 1byte:address/command + 1byte:data
@@ -119,32 +108,30 @@ uint8 HalDecimal2BCD(uint8 decimal);
 void HalRTCDS1302Work(uint8 DS1302Enable);
 
 bool HalRTCDS1302OK(void);
-#if (defined HAL_OLED) && (HAL_OLED == TRUE)
-  //do nothing
-#else
-  void halMcuWaitUs(uint16 microSecs);
-#endif
+
+void halMcuWaitUs(uint16 microSecs);
+
   
 /***************************************************************************************************
  *                                              MACROS
  ***************************************************************************************************/
-/* ----------- SCLK's ---------- */
-#define DS1302_SCLK_OUT()   MCU_IO_OUTPUT(RTC_SCLK_PORT, RTC_SCLK_PIN, 0)
-#define DS1302_SCLK_HIGH()  MCU_IO_SET_HIGH(RTC_SCLK_PORT, RTC_SCLK_PIN)
-#define DS1302_SCLK_LOW()   MCU_IO_SET_LOW(RTC_SCLK_PORT, RTC_SCLK_PIN)
+/* ----------- SCLK's P2.7---------- */
+#define DS1302_SCLK_OUT()   P2DIR |= BIT7
+#define DS1302_SCLK_HIGH()  P2OUT |= BIT7
+#define DS1302_SCLK_LOW()   P2OUT &= ~BIT7
 
-/* ----------- IO's ---------- */
-#define DS1302_IO_OUT()  MCU_IO_OUTPUT(RTC_IO_PORT, RTC_IO_PIN, 0)
-#define DS1302_IO_HIGH() MCU_IO_SET_HIGH(RTC_IO_PORT, RTC_IO_PIN)
-#define DS1302_IO_LOW()  MCU_IO_SET_LOW(RTC_IO_PORT,  RTC_IO_PIN)
+/* ----------- IO's P2.6---------- */
+#define DS1302_IO_OUT()  P2DIR |= BIT6
+#define DS1302_IO_HIGH() P2OUT |= BIT6
+#define DS1302_IO_LOW()  P2OUT &= ~BIT6
 
-#define DS1302_IO_IN()   MCU_IO_INPUT(RTC_IO_PORT, RTC_IO_PIN, MCU_IO_TRISTATE)
-#define GET_DS1302_IO()  MCU_IO_GET(RTC_IO_PORT,RTC_IO_PIN)
+#define DS1302_IO_IN()   P2DIR &= ~BIT6
+#define GET_DS1302_IO()  P2IN
 
-/* ----------- CE's ---------- */
-#define DS1302_CE_OUT()     MCU_IO_OUTPUT(RTC_CE_PORT, RTC_CE_PIN, 0)
-#define DS1302_CE_HIGH()    MCU_IO_SET_HIGH(RTC_CE_PORT, RTC_CE_PIN)
-#define DS1302_CE_LOW()     MCU_IO_SET_LOW(RTC_CE_PORT, RTC_CE_PIN)     
+/* ----------- CE's P2.5---------- */
+#define DS1302_CE_OUT()     P2DIR |= BIT5
+#define DS1302_CE_HIGH()    P2OUT |= BIT5
+#define DS1302_CE_LOW()     P2OUT &= ~BIT5    
 
 /* ----------- delay ---------- */
 #define DS1302_WRITE_DELAY()  halMcuWaitUs(5);
@@ -166,6 +153,8 @@ bool HalRTCDS1302OK(void);
  **************************************************************************************************/
 void HalRTCInit(void)
 {
+  // 设置端口功能
+  P2SEL &= ~(BIT5 + BIT6 + BIT7);
   //set port dir and power low
   DS1302_CE_OUT(); 
   DS1302_SCLK_OUT();
@@ -402,9 +391,9 @@ uint8 HalRTCReadByte(void)
     //当SCLK拉高时，DS1302会释放IO，如果原来输出0，IO电压会不断
     //升高，可能造成数据读取错误，所以要先读取数据再拉高SCLK
     
-    //IO是P1.7 所以返回0或1000 0000
+    //IO是P2.6 所以返回0或0100 0000
     if( GET_DS1302_IO() & DS1302_IO_READ_HIGH )
-      data = data + BV(i);
+      data = data + (1<<i);
     
     DS1302_SCLK_HIGH();
   }
@@ -613,9 +602,9 @@ uint8 HalRTCSingleRead(uint8 addr)
     //当SCLK拉高时，DS1302会释放IO，如果原来输出0，IO电压会不断
     //升高，可能造成数据读取错误，所以要先读取数据再拉高SCLK
     
-    //IO是P1.7 所以返回0或1000 0000
+    //IO是P2.6 所以返回0或0100 0000
     if( GET_DS1302_IO() & DS1302_IO_READ_HIGH )
-      data = data + BV(i);
+      data = data + (1<<i);
     
     DS1302_SCLK_HIGH();
   }
@@ -699,13 +688,11 @@ void HalRTCStructInit(RTCStruct_t *RTCStruct,uint8 sec,uint8 min,uint8 hour,uint
 }
 
 
-#if (defined HAL_OLED) && (HAL_OLED == TRUE)
-  //do nothing
-#else
+
 /**************************************************************************************************
  * @fn      halMcuWaitUs
  *
- * @brief   wait for x us. @ 32MHz MCU clock it takes 32 "nop"s for 1 us delay.
+ * @brief   wait for x us. @ 8MHz MCU clock it takes 8 "nop"s for 1 us delay.
  *
  * @param   x us. range[0-65536]
  *
@@ -715,24 +702,9 @@ void halMcuWaitUs(uint16 microSecs)
 {
   while(microSecs--)
   {
-    /* 32 NOPs == 1 usecs */
+    /* 8 NOPs == 1 usecs */
     asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop");
+    asm("nop"); asm("nop"); asm("nop");
   }
 }
-#endif
 
-#else
-
-void HalRTCInit(void);
-void HalRTCGetOrSet(uint8 getOrSetFlag,uint8 registerName,uint8 *value);
-void HalRTCGetOrSetFull(uint8 getOrSetFlag, RTCStruct_t *RTCStruct);
-void HalRTCStructInit(RTCStruct_t *RTCStruct,uint8 sec,uint8 min,uint8 hour,uint8 date,
-                             uint8 month,uint8 week,uint8 year);
-
-#endif /* HAL_RTC_DS1302 */
