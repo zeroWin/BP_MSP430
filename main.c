@@ -7,6 +7,8 @@
 #include  <math.h>
 #include  "typedefs.h"
 #include "oled_main.h"
+#include "hal_type.h"
+#include "hal_uart_cc2530.h"
 /*****************************************************************************
 宏定义
 ******************************************************************************/
@@ -67,7 +69,6 @@ int Device_waite_time1;
 void Init_Clock();
 void Init_Port1();
 void Init_Port2();
-void Init_Port3();
 void Init_Port4();
 void Init_Port5();
 void Init_Port6();
@@ -86,6 +87,7 @@ unsigned int adc2mmhg(unsigned int adc);
 void RBUF_PROCESS(void);
 int abs(int a);
 void Find_Hign_Low_BP();
+
 /*****************************************************************************
 主程序
 *****************************************************************************/
@@ -98,7 +100,7 @@ void main(void)
        Init_Port1();
        Init_Port2();
        P2OUT &= ~BIT4;
-       Init_Port3();
+       UART1_Config_Init();                     // UART-CC2530初始化
        Init_Port4();
        Init_Port6();                             
        //VALVE_OFF();                             //通道0 控制电磁阀
@@ -112,7 +114,7 @@ void main(void)
        Show_Wait_Symbol();    
        OLED_Refresh_Gram();
        delay_ms(10);        
-       _EINT();      
+       _EINT();
        while(1)
             {
               if(Device_status == DEVICE_WAIT)             //等待状态
@@ -198,7 +200,7 @@ void Init_Clock()
        BCSCTL1 = 0X00;			//将寄存器的内容清零
 					//XT2震荡器开启
 					//LFTX1工作在低频模式
-					//ACLK的分频因子为1				
+					//ACLK的分频因子为1	32768			
        do 
        {
 	   IFG1 &= ~OFIFG;              // 清除OSCFault标志
@@ -207,8 +209,8 @@ void Init_Clock()
        while ((IFG1 & OFIFG) == OFIFG); // 如果OSCFault =1   
 					
        BCSCTL2 = 0X00;			//将寄存器的内容清零
-       BCSCTL2 = SELM_2 + SELS;		//MCLK的时钟源为TX2CLK，分频因子为1
-                         		//SMCLK的时钟源为TX2CLK，分频因子为1
+       BCSCTL2 = SELM_2 + SELS;		//MCLK的时钟源为TX2CLK，分频因子为1 8M
+                         		//SMCLK的时钟源为TX2CLK，分频因子为1 8M
 }
 /*****************************************************************************
 端口P1初始化
@@ -233,26 +235,8 @@ void Init_Port2()
        P2DIR |= BIT3;//P2.3输出 控制蜂鸣器
        P2OUT |= BIT3;
        P2DIR |= BIT4;//P2.4输出 LED D5
-       P2DIR |= BIT5;//P2.5输出 DS1302 RST
-       P2DIR |= BIT6;//P2.6输出 DS1302 I/O
-       P2DIR |= BIT7;//P2.7输出 DS1302 SCLK
 }
-/*****************************************************************************
-端口P3初始化 UART
-*****************************************************************************/
-void Init_Port3()
-{
-       P3SEL |= 0x30;                          //P3.4 P3.5配置为UART
-       UCTL0 &= ~SWRST;
-       ME1 |= UTXE0 + URXE0;                   // Enable USART0 TXD/RXD
-       UCTL0 |= CHAR;                          // 8-bit character
-       UTCTL0 |= SSEL1;                        // UCLK = ACLK
-       UBR00 = 0xD0;                           // 32k/9600 - 3.41
-       UBR10 = 0x00;                           
-       UMCTL0 = 0x00;                          // Modulation 
-       UCTL0 &= ~SWRST;                        // Initialize USART state machine
-       IE1 |= URXIE0;                          // Enable USART0 RX/TX interrupt 
-}
+
 /*****************************************************************************
 端口P4初始化
 *****************************************************************************/
@@ -757,38 +741,40 @@ __interrupt void Timer_A (void)
                break;
        }
 }
+
+
 /*****************************************************************************
 UART中断服务程序
 *****************************************************************************/
 #pragma vector=USART0RX_VECTOR
 __interrupt void USART0_RX_ISR(void)
 {
- unsigned char ch;
- ch=RXBUF0;   
-  if(R_SP<2)                          //帧头判别
-    {
-	if(ch==hello[R_SP])R_SP++;
-	else R_SP=0;
-	}
-  else if(R_SP<4)                     //帧数据
-    {
-	     RBUF[R_SP]=ch;
-	     R_SP++;
-    }
-  else if(ch==hello[3])               //帧尾判别
-         {
-		 R_SP=0;
-		 if(RBUF_NEED_PROCESS==0)
-		      {
-			  RBUF_NEED_PROCESS=1;
-		       }
-		 }  
-  else 
+  static uint8 receiveFlag = 0;
+  static uint8 controlMessage = 0;
+  uint8 receiveMessage = RXBUF0;
+  switch(receiveFlag)
   {
-    RBUF_NEED_PROCESS=1;
-    R_SP=0;
-  }
-  }
+    case 0:
+      if(receiveMessage == DATA_START)
+        receiveFlag = 1;
+      else
+        receiveFlag = 0;
+      break;
+    case 1:
+        controlMessage = receiveMessage;
+        receiveFlag = 2;
+      break;
+    case 2:
+      if(receiveMessage == DATA_END)
+      {
+        
+      }
+      receiveFlag = 0;
+      break;
+  }  
+}
+
+
 /************************************************************************
                         按键控制中断服务程序																                 
 *************************************************************************/
@@ -886,5 +872,6 @@ __interrupt void Port_1(void)
     P1IE |= BIT3;               // P1.7 interrupt enabled
   
   }
+
 
 

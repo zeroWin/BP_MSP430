@@ -390,7 +390,7 @@
         </option>
         <option>
           <name>newCCIncludePaths</name>
-          <state></state>
+          <state>$PROJ_DIR$\Driver\</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -418,7 +418,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -427,7 +427,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CInput</name>
@@ -752,7 +752,7 @@
         </option>
         <option>
           <name>SecondaryOutputFile</name>
-          <state></state>
+          <state>(None for the selected format)</state>
         </option>
         <option>
           <name>XDefines</name>
@@ -804,7 +804,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>lnk0t.xcl</state>
+          <state>$TOOLKIT_DIR$\config\linker\lnk430f149.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -892,7 +892,7 @@
         </option>
         <option>
           <name>xcProgramEntryLabel</name>
-          <state></state>
+          <state>__program_start</state>
         </option>
         <option>
           <name>DebugInformation</name>
@@ -932,7 +932,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state></state>
+          <state>blood pressure.a43</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
@@ -2250,6 +2250,18 @@
       <data/>
     </settings>
   </configuration>
+  <group>
+    <name>Driver</name>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_type.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_uart_cc2530.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_uart_cc2530.h</name>
+    </file>
+  </group>
   <file>
     <name>$PROJ_DIR$\main.c</name>
   </file>

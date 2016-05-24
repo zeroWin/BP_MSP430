@@ -1954,6 +1954,18 @@
       </data>
     </settings>
   </configuration>
+  <group>
+    <name>Driver</name>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_type.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_uart_cc2530.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_uart_cc2530.h</name>
+    </file>
+  </group>
   <file>
     <name>$PROJ_DIR$\main.c</name>
   </file>
