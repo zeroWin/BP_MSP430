@@ -1,9 +1,9 @@
 /**************************************************************************************************
-  Filename:       pingPongBuf.h
-  Revised:        $Date: 2016-04-06 15:41:16 +0800 (Wen, 6 Apr 2016) $
+  Filename:       hal_BP_measure.h
+  Revised:        $Date: 2016-04-05 15:41:16 +0800 (Tues, 5 Apr 2016) $
   Revision:       $Revision: 1 $
 
-  Description:    This file contains the interface to the pingPong buff.
+  Description:    This file contains the interface to the BP measure.
 
 
   Copyright 2016 Bupt. All rights reserved.
@@ -35,13 +35,10 @@
 
   Should you have any questions regarding your right to use this Software,
   contact kylinnevercry@gami.com. 
-
-  该文件提供Ping Pong Buf 功能的接口API函数
-  供SD卡驱动和ECG采集驱动使用
 **************************************************************************************************/
 
-#ifndef PING_PONG_BUFF_H
-#define PING_PONG_BUFF_H
+#ifndef HAL_BP_MEASURE_H
+#define HAL_BP_MEASURE_H
 
 #ifdef __cplusplus
 extern "C"
@@ -52,8 +49,9 @@ extern "C"
  *                                             INCLUDES
  **************************************************************************************************/
 #include "hal_type.h"
+#include "pingPongBuf.h"
 
-/**************************************************************************************************
+  /**************************************************************************************************
  * MACROS
  **************************************************************************************************/
 
@@ -61,59 +59,56 @@ extern "C"
 /**************************************************************************************************
  *                                            CONSTANTS
  **************************************************************************************************/
+/* pingPong Buffer */
+/* for Send to Network size --- 32(DC+AC)+2(BP_H和BP_L) uint16 =  68 byte */
+/* for Send to SD      size --- 256 uint16 = 512 byte */
+#define BP_WAVEFORM_SAMPLER_NUM_PER_PACKET     34
+#define BP_WAVEFORM_SAMPLER_NUM_FOR_SD         256
+  
+#define BP_WAVEFORM_READ_ONE_TIME              480
+#define BP_WAVEFORM_SEND_ONE_TIME              60
 
+/* pingPong Buffer Choose */
+#define BP_BUFFER_FOR_ZIGBEE   0x00
+#define BP_BUFFER_FOR_SD       0x01
   
 /***************************************************************************************************
  *                                             TYPEDEFS
  ***************************************************************************************************/
-typedef enum
-{
-  PingPongBuf_WRITE_SUCCESS,
-  PingPongBuf_WRITE_SWITCH, // write successfully and switch ping pong buff
-  PingPongBuf_WRITE_FAIL,
-  PingPongBuf_READ_SUCCESS,
-  PingPongBuf_READ_FAIL
-} BufOpStatus_t;
 
-typedef struct
-{
-  uint8  active_buf_flag; // only last bit is valid
-  uint16 write_count;     // 已经写入到buff的数据量
-  uint16 buf_size;        // buff的大小，用户定义
-  uint16 *pBuf_ping;
-  uint16 *pBuf_pong;
-} PingPongBuf_t;
+/**************************************************************************************************
+ *                                        GLOBAL VARIABLES
+ **************************************************************************************************/
+
 
 /**************************************************************************************************
  *                                             FUNCTIONS - API
  **************************************************************************************************/
 
 /*
- * Initialize PingPong buff.
+ * Start BP measure. 
  */
-extern PingPongBuf_t *PingPongBufInit(uint16 pingPongBufSize);
+extern void HalBPMeasStart(uint8 deviceStatus);
 
 /*
- * Reset PingPong buff.Just reset active_buf_flag and write_count
- * not free the mem
+ * Stop BP measure.
  */
-extern void PingPongBufReset(PingPongBuf_t *pingPongBuf);
+extern void HalBPMeasStop(void);
 
 /*
- * Write one data into the active buffer.
+ * Write BP value into PingPong buff
  */
-extern BufOpStatus_t PingPongBufWrite(PingPongBuf_t *pingPongBuf,uint16 writeData);
+extern BufOpStatus_t HalBPMeasWriteToBuf(uint16 writeData);
 
 /*
- * Read all data from inactive buffer.
+ * Read BP value from PingPong buff
  */
-extern BufOpStatus_t PingPongBufRead(PingPongBuf_t *pingPongBuf,
-                                     uint16 **dataBuf);
+extern void HalBPMeasReadFromBuf(uint16 **dataBuf);
 
 /*
- * Free PingPong buff memory.
+ * Reset BP ping-pong buffer
  */
-extern void PingPongBufFree(PingPongBuf_t *pingPongBuf);
+extern void HalBPMeasBuffReset(void);
 
 #ifdef __cplusplus
 }

@@ -1,9 +1,9 @@
 /**************************************************************************************************
-  Filename:       pingPongBuf.h
-  Revised:        $Date: 2016-04-06 15:41:16 +0800 (Wen, 6 Apr 2016) $
+  Filename:       hal_BP_measure.c
+  Revised:        $Date: 2016-04-05 15:41:16 +0800 (Tues, 5 Apr 2016) $
   Revision:       $Revision: 1 $
 
-  Description:    This file contains the interface to the pingPong buff.
+  Description:    This file contains the interface to the BP measure.
 
 
   Copyright 2016 Bupt. All rights reserved.
@@ -36,86 +36,103 @@
   Should you have any questions regarding your right to use this Software,
   contact kylinnevercry@gami.com. 
 
-  该文件提供Ping Pong Buf 功能的接口API函数
-  供SD卡驱动和ECG采集驱动使用
+  使用Timer1 作为BP采集的定时器
 **************************************************************************************************/
 
-#ifndef PING_PONG_BUFF_H
-#define PING_PONG_BUFF_H
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-  
-/**************************************************************************************************
- *                                             INCLUDES
- **************************************************************************************************/
-#include "hal_type.h"
-
-/**************************************************************************************************
- * MACROS
- **************************************************************************************************/
-
-  
-/**************************************************************************************************
- *                                            CONSTANTS
- **************************************************************************************************/
-
-  
 /***************************************************************************************************
- *                                             TYPEDEFS
+ *                                             INCLUDES
  ***************************************************************************************************/
-typedef enum
-{
-  PingPongBuf_WRITE_SUCCESS,
-  PingPongBuf_WRITE_SWITCH, // write successfully and switch ping pong buff
-  PingPongBuf_WRITE_FAIL,
-  PingPongBuf_READ_SUCCESS,
-  PingPongBuf_READ_FAIL
-} BufOpStatus_t;
+#include "hal_BP_measure.h"
 
-typedef struct
-{
-  uint8  active_buf_flag; // only last bit is valid
-  uint16 write_count;     // 已经写入到buff的数据量
-  uint16 buf_size;        // buff的大小，用户定义
-  uint16 *pBuf_ping;
-  uint16 *pBuf_pong;
-} PingPongBuf_t;
+PingPongBuf_t *pingPongBuf_BP = NULL;
 
 /**************************************************************************************************
- *                                             FUNCTIONS - API
+ *                                        FUNCTIONS - API
  **************************************************************************************************/
 
-/*
- * Initialize PingPong buff.
- */
-extern PingPongBuf_t *PingPongBufInit(uint16 pingPongBufSize);
 
-/*
- * Reset PingPong buff.Just reset active_buf_flag and write_count
- * not free the mem
- */
-extern void PingPongBufReset(PingPongBuf_t *pingPongBuf);
-
-/*
- * Write one data into the active buffer.
- */
-extern BufOpStatus_t PingPongBufWrite(PingPongBuf_t *pingPongBuf,uint16 writeData);
-
-/*
- * Read all data from inactive buffer.
- */
-extern BufOpStatus_t PingPongBufRead(PingPongBuf_t *pingPongBuf,
-                                     uint16 **dataBuf);
-
-/*
- * Free PingPong buff memory.
- */
-extern void PingPongBufFree(PingPongBuf_t *pingPongBuf);
-
-#ifdef __cplusplus
+/**************************************************************************************************
+ * @fn      HalBPMeasWriteToBuf
+ *
+ * @brief   Write AD sample data to buffer
+ *
+ * @param   writeData
+ *          deviceStatus -- online or offline
+ *
+ * @return  Buf status
+ **************************************************************************************************/
+BufOpStatus_t HalBPMeasWriteToBuf(uint16 writeData)
+{
+  BufOpStatus_t OpStatus;
+  
+  OpStatus = PingPongBufWrite(pingPongBuf_BP,writeData);
+    
+  return OpStatus;
 }
-#endif  
-#endif
+
+
+/**************************************************************************************************
+ * @fn      HalBPMeasReadFromBuf
+ *
+ * @brief   Read AD sample data from buffer
+ *
+ * @param   dataBuf -- store the data
+ *          deviceStatus -- online or offline
+ *
+ * @return  void
+ **************************************************************************************************/
+void HalBPMeasReadFromBuf(uint16 **dataBuf)
+{
+  PingPongBufRead(pingPongBuf_BP,dataBuf);
+}
+
+
+/***************************************************************************************************
+* @fn      HalBPMeasBuffReset
+*
+* @brief   Reset BP ping-pong buffer
+*
+* @param   void
+*
+* @return  void
+***************************************************************************************************/
+void HalBPMeasBuffReset(void)
+{
+  PingPongBufReset(pingPongBuf_BP);
+}
+
+/***************************************************************************************************
+* @fn      HalBPMeasStart
+*
+* @brief   Start the BP Meas Service
+*
+* @param   timerPerTick - number of micro sec per tick, (ticks x prescale) / clock = usec/tick
+* 
+*
+* @return  
+***************************************************************************************************/
+void HalBPMeasStart(uint8 deviceStatus)
+{
+  //开辟ping-pong buffer
+  if ( deviceStatus == BP_BUFFER_FOR_ZIGBEE )
+    pingPongBuf_BP = PingPongBufInit(BP_WAVEFORM_SAMPLER_NUM_PER_PACKET); //for send
+  else if ( deviceStatus == BP_BUFFER_FOR_SD )
+    pingPongBuf_BP = PingPongBufInit(BP_WAVEFORM_SAMPLER_NUM_FOR_SD);     //for write to SD
+}
+
+
+/***************************************************************************************************
+* @fn      HalBPMeasStop
+*
+* @brief   Stop the BP Meas Service
+*
+* @param   
+*
+* @return  
+***************************************************************************************************/
+void HalBPMeasStop(void)
+{
+  // Free ping-pong buffer
+  PingPongBufFree(pingPongBuf_BP);
+  pingPongBuf_BP = NULL;
+}

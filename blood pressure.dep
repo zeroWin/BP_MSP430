@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>2449129500</fileChecksum>
+  <fileChecksum>1101107252</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -33,15 +33,39 @@
       <file>$TOOLKIT_DIR$\lib\dlib\dl430fn.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\OLED.__cstat.et</file>
       <file>$PROJ_DIR$\Debug\Obj\main.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_rtc_ds1302.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\PingPongBuf.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_delay.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.__cstat.et</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.pbi</file>
       <file>$PROJ_DIR$\Driver\hal_type.h</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_rtc_ds1302.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_rtc_ds1302.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_delay.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_delay.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\PingPongBuf.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\PingPongBuf.r43</file>
       <file>$PROJ_DIR$\Driver\hal_uart_cc2530.c</file>
       <file>$PROJ_DIR$\Driver\hal_uart_cc2530.h</file>
       <file>$PROJ_DIR$\Driver\hal_rtc_ds1302.h</file>
       <file>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</file>
+      <file>$PROJ_DIR$\Driver\hal_delay.h</file>
+      <file>$PROJ_DIR$\main.h</file>
+      <file>$PROJ_DIR$\Driver\hal_delay.c</file>
+      <file>$PROJ_DIR$\Driver\PingPongBuf.h</file>
+      <file>$PROJ_DIR$\Driver\PingPongBuf.c</file>
+      <file>$PROJ_DIR$\Driver\hal_BP_measure.h</file>
+      <file>$PROJ_DIR$\Driver\hal_ecg_measure.c</file>
+      <file>$PROJ_DIR$\Driver\hal_BP_measure.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_ecg_measure.r43</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_ecg_measure.pbi</file>
+      <file>$PROJ_DIR$\Driver\hal_ecg_measure.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.r43</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>
@@ -75,11 +99,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 29 23 7 9 3 34 19 11 21 18 0 33 20 22 15 10 14 13</file>
+          <file> 21 46 34 7 15 3 43 19 11 14 18 0 42 45 50 20 22 10 13 9 23 48</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 13 19 20 18 7 22 21 15 10 14 9 23 11 3 0 29 33 34</file>
+          <file> 13 19 20 18 7 22 21 15 10 14 9 23 11 3 0 34 42 43 45 46 50 48</file>
         </tool>
       </inputs>
     </file>
@@ -102,11 +126,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 20 22 3 10 18 0 19 21 15 14 7 13 11 9 23</file>
+          <file> 45 19 23 3 7 9 18 0 20 22 21 13 11 15 10 14</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 13 19 20 18 7 22 21 15 10 14 9 23 11 3 0</file>
+          <file> 13 19 20 18 7 22 21 15 10 14 9 23 11 3 0 45</file>
         </tool>
       </inputs>
     </file>
@@ -115,7 +139,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 31 27 12 16 24</file>
+          <file> 59 37 36 32 12 16 40 24</file>
         </tool>
       </inputs>
     </file>
@@ -124,21 +148,25 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 28</file>
+          <file> 33</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 27</file>
+          <file> 32</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 31</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 29 19 13 20 33</file>
+          <file> 34 19 13 20 42</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 33 29 13 19 20</file>
+          <file> 42 34 13 19 20</file>
         </tool>
       </inputs>
     </file>
@@ -147,21 +175,125 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 30</file>
+          <file> 35</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 31</file>
+          <file> 36</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 27</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 13 20 34 29</file>
+          <file> 19 13 20 43 34</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 34 29 13 19 20</file>
+          <file> 43 34 13 19 20</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_delay.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 38</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 37</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 29</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 3 19 13 20 45</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 45 3 13 19 20</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\PingPongBuf.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 39</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 40</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 28</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 55 21 7 54 34 9 23 48 15 10 14</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 48 34 54 7 21 15 10 14 9 23 55</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_ecg_measure.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 56</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 53</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 57 48 34</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_BP_measure.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 58</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 59</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 30</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 50 34 48</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 50 34 48</file>
         </tool>
       </inputs>
     </file>

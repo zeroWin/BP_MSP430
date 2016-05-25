@@ -101,7 +101,7 @@
         </option>
         <option>
           <name>GStackHeapOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GStackSize2</name>
@@ -109,7 +109,7 @@
         </option>
         <option>
           <name>GHeapSize2</name>
-          <state>80</state>
+          <state>250</state>
         </option>
         <option>
           <name>RadioDataModelType</name>
@@ -391,6 +391,7 @@
         <option>
           <name>newCCIncludePaths</name>
           <state>$PROJ_DIR$\Driver\</state>
+          <state>$PROJ_DIR$\</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2253,6 +2254,18 @@
   <group>
     <name>Driver</name>
     <file>
+      <name>$PROJ_DIR$\Driver\hal_BP_measure.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_BP_measure.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_delay.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_delay.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</name>
     </file>
     <file>
@@ -2267,9 +2280,18 @@
     <file>
       <name>$PROJ_DIR$\Driver\hal_uart_cc2530.h</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\PingPongBuf.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\PingPongBuf.h</name>
+    </file>
   </group>
   <file>
     <name>$PROJ_DIR$\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\main.h</name>
   </file>
   <file>
     <name>$PROJ_DIR$\OLED.c</name>

@@ -58,89 +58,24 @@
 // You may not use the Program in non-TI devices.
 //--------------------------------------------------------------------------------
 
-#ifndef AFE44x0_MAIN_H_
-#define AFE44x0_MAIN_H_
+#ifndef __MAIN_H_
+#define __MAIN_H_
+#include "hal_type.h"               //Basic Type declarations
 
-#define SOT     0x02
-#define EOT     0x03
-#define CR      0x0D
-
-#define WRITE_REG_CMD                   0x02
-#define READ_REG_CMD                    0x03
-#define START_READ_ADC_REG_CMD          0x01
-#define STOP_READ_ADC_REG_CMD           0x06
-#define DEV_ID_CMD                      0x04
-#define FW_UPGRADE_CMD                  0x05
-#define FW_VERSION_CMD                  0x07
-
-#define __AFE4400__
-//#define __AFE4490__
-
-#define SPO2_Wait_Symbol_Start_X 11
-#define SPO2_Wait_Symbol_Start_Y 40
-
-#define HR_Wait_Symbol_Start_X   76
-#define HR_Wait_Symbol_Start_Y   40
-
-#define SPO2_Show3Num_Start_X   15
-#define SPO2_Show3Num_Start_Y   30
-
-#define HR_Show3Num_Start_X     76   
-#define HR_Show3Num_Start_Y     30
-
-#define SPO2_Show2Num_Start_X   15
-#define SPO2_Show2Num_Start_Y   30
-
-#define HR_Show2Num_Start_X     83   
-#define HR_Show2Num_Start_Y     30
-
-#define SPO2_Symbol_Start_X     8
-#define SPO2_Symbol_Start_Y     12
-
-#define PR_Symbol_Start_X     88
-#define PR_Symbol_Start_Y     12
-
-#define Heart_Sympol_Start_X    65
-#define Heart_Sympol_Start_Y    0
-//Function declarations
-void Init_Ports (void);
-void Init_Clock (void);
-void Show_Wait_Symbol(const char *p);
-void Init_TimerA1 (void);
-void Cal_spo2_and_HR(void);
-void Init_KEY_Interrupt (void);
-//VOID Init_TimerA1 (VOID);
-void Init_ADG1608();
-void ADG1608_select(unsigned char S_number);
-
-void UART_send(unsigned char* byt_string, int length);
-void Init_UART();
-void UART_send(unsigned char* byt_string, int length);
-
-//volatile unsigned char RxBuffer[6]; 
-//unsigned char MMA8451_senddata[8];
-
-void delay(unsigned long num);
-
-void Init_MPY(void);
+typedef enum
+{
+  BP_ONLINE_IDLE,             // 在线等待状态
+  BP_ONLINE_MEASURE,          // 在线测量状态
+  BP_OFFLINE_IDLE,            // 离线等待状态
+  BP_OFFLINE_MEASURE,         // 离线测量状态
+  BP_FIND_NETWORK,            // 找网状态
+  BP_SYNC_DATA,               // 同步数据状态
+  BP_CLOSING,                 // 关闭网络状态
+  BP_ON_SLEEP,                // 在线睡眠状态
+  BP_OFF_SLEEP,               // 离线睡眠状态 
+} BPSystemStatus_t;
 
 
-
-
-extern void oledinit(void);
-extern void delay(unsigned long num);
-extern void write_oled_data(unsigned char ucData);
-extern void OLED_Refresh_Gram(void);
-
-extern void OLED_Clear(void);
-extern void OLED_ShowSymbol(u8 x,u8 y,u8 sym,u8 mode);
-extern void OLED_ShowChar(u8 x,u8 y,u8 chr,u8 size,u8 mode);
-extern void OLED_ShowString(u8 x,u8 y,u8 size,const u8 *p);
-
-extern void OLED_ShowNum(u8 x,u8 y,int num,u8 len,u8 size);
-extern void OLED_SLEEP(u8 st);
-extern void OLED_ShowWaitSymbol(u8 x,u8 y,u8 mode);
-extern void OLED_ShowHeartSymbol(u8 x,u8 y,u8 mode,u8 HeartType);
 
 #endif /*AFE44x0_MAIN_H_*/
 

@@ -1957,6 +1957,18 @@
   <group>
     <name>Driver</name>
     <file>
+      <name>$PROJ_DIR$\Driver\hal_BP_measure.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_BP_measure.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_delay.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_delay.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</name>
     </file>
     <file>
@@ -1971,9 +1983,18 @@
     <file>
       <name>$PROJ_DIR$\Driver\hal_uart_cc2530.h</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\PingPongBuf.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\PingPongBuf.h</name>
+    </file>
   </group>
   <file>
     <name>$PROJ_DIR$\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\main.h</name>
   </file>
   <file>
     <name>$PROJ_DIR$\OLED.c</name>
