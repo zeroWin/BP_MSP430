@@ -44,18 +44,7 @@ unsigned int last_is_low=0;
 
 unsigned int delay_times=0;
 unsigned char step=101;
-char command;
-int value1;
-int ch1;
-int value2;
-int ch2;
-int value3;
-int ch3;
-int value4;
-int ch4;
-unsigned char const hello[4]={0x4B,0x3A,0x1F,0x2E};//串口握手协议
-unsigned char RBUF[8];
-unsigned char R_SP=0;
+
 int Prepressure=3500;
 //int Prepressure=4000;
 int Device_waite_time1;
@@ -85,14 +74,19 @@ unsigned int adc2mmhg(unsigned int adc);
 void RBUF_PROCESS(void);
 int abs(int a);
 void Find_Hign_Low_BP();
+void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint16 BP_LOW_temp);
+void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp);
 
 BPSystemStatus_t BPSystemStatus;
+uint8 writeNum;
+uint8 bufferFullFlag;
 /*****************************************************************************
 主程序
 *****************************************************************************/
 void main(void)
 {
   WDTCTL = WDTPW + WDTHOLD;                //关闭看门狗电路
+  uint16 *dataTemp;
   Init_Clock();
   Init_Port1();
   Init_Port2();
@@ -138,15 +132,39 @@ void main(void)
       OLED_SLEEP(1);                             //关闭显示器        
       _BIS_SR(LPM0_bits + GIE);                  //进入低功耗
     }
-    else if(BPSystemStatus == BP_OFFLINE_MEASURE)     //测量状态
+    else if(BPSystemStatus == BP_OFFLINE_MEASURE || BPSystemStatus == BP_ONLINE_MEASURE)     //测量状态
     {
+      if(bufferFullFlag == 1) // buffer满了
+      {
+        HalBPMeasReadFromBuf( &dataTemp );
+        if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
+        { // 写入SD卡
+          
+        }
+        if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
+        {
+          //发送给CC2530
+          UART1_Send_Buffer((uint8 *)dataTemp,68);
+        }
+        bufferFullFlag = 0;
+      }
       if(step==30) // step=30说明测量结果
       { 
         Find_Hign_Low_BP();                    //计算高低血压值
-        // BP_High 和 BP_Low        
-
+        // BP_High 和 BP_Low
         step =101;
-        OLED_ShowString(SPO2_Symbol_Start_X,0,12,"Off_IDLE");
+        if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
+        {
+          Show_Wait_Symbol("Off_IDLE");
+          BPSystemStatus = BP_OFFLINE_IDLE;
+        }
+        if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
+        {
+          // 发送最后结果
+          SendBP_HighAndLowoCC2530(BP_High,BP_Low);
+          Show_Wait_Symbol("On_IDLE ");
+          BPSystemStatus = BP_ONLINE_IDLE;
+        }
         OLED_ShowString(0,30,32,"        ");  //8个空格，完全清空
         
         if(BP_High<100)
@@ -167,6 +185,7 @@ void main(void)
 /*****************************************************************************
 定时器A中断服务程序
 *****************************************************************************/
+uint16 aa = 0;
 #pragma vector=TIMERA0_VECTOR
 __interrupt void Timer_A (void)
 {
@@ -248,7 +267,17 @@ __interrupt void Timer_A (void)
        
      case 20:                                 //将BP_DC和BP_AC通过串口发送                 
        // 只传输此时的采样值
-       
+       if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
+       {
+       }
+       if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
+       {
+         //SendDCAndACToCC2530(BP_DC,BP_AC,100,100);
+         SendDCAndACToCC2530(aa,aa,100,100);
+         aa++;
+         if(aa==600)
+           aa = 0;
+       }
        if(last_is_low==1)
        {
          if(BP_AC>BP_AC_AVE)
@@ -538,6 +567,8 @@ void Start_BPMeasure(void)
   if(BPSystemStatus == BP_ONLINE_IDLE) // 在线空闲状态
     HalBPMeasStart(BP_BUFFER_FOR_ZIGBEE);
   
+  writeNum = 0;
+  bufferFullFlag = 0;
   VALVE_OFF();
   step=0;
   CCTL0 |= CCIE;                        //启动定时器A中断
@@ -554,10 +585,10 @@ void Start_BPMeasure(void)
  */
 void Stop_BPMeasure(void)
 {
+  CCTL0 &= ~CCIE;
   // 释放申请的空间
   HalBPMeasStop();
   
-  CCTL0 &= ~CCIE;
   step =101;
   PUMP_OFF();
   VALVE_ON(); //放气
@@ -860,4 +891,31 @@ void Write_8402(u16 data_8402)
        P1OUT &= ~BIT0;
        usDelay(1); 	
        P1OUT |= BIT2;
+}
+
+void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
+{
+  BufOpStatus_t BufOpStatus;
+  HalBPMeasWriteToBuf(DC_temp);
+  HalBPMeasWriteToBuf(AC_temp);
+  writeNum++;
+  if(writeNum == 16)
+  {
+    HalBPMeasWriteToBuf(BP_HIGH_temp);
+    BufOpStatus = HalBPMeasWriteToBuf(BP_LOW_temp);
+    bufferFullFlag = 1;
+    writeNum = 0;
+  }
+}
+
+void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
+{
+  uint8 i;
+  for(i = 0; i < 64; ++i)
+    UART1_Send_Byte(0xFF);
+  
+  UART1_Send_Byte(BP_HIGH_temp & 0x00FF);
+  UART1_Send_Byte((BP_HIGH_temp & 0xFF00) >> 8);
+  UART1_Send_Byte(BP_LOW_temp & 0x00FF);
+  UART1_Send_Byte((BP_LOW_temp & 0xFF00) >> 8);  
 }

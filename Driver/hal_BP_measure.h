@@ -60,8 +60,8 @@ extern "C"
  *                                            CONSTANTS
  **************************************************************************************************/
 /* pingPong Buffer */
-/* for Send to Network size --- 32(DC+AC)+2(BP_HºÍBP_L) uint16 =  68 byte */
-/* for Send to SD      size --- 256 uint16 = 512 byte */
+/* for Send to Network size --- 32(DC+AC)+2(BP_HºÍBP_L) uint16 =  68 byte 16*1/512=0.03s*/
+/* for Send to SD      size --- 256 uint16 = 512 byte 128*1/512 = 0.25s*/
 #define BP_WAVEFORM_SAMPLER_NUM_PER_PACKET     34
 #define BP_WAVEFORM_SAMPLER_NUM_FOR_SD         256
   
