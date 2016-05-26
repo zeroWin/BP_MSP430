@@ -138,8 +138,7 @@ void main(void)
       {
         HalBPMeasReadFromBuf( &dataTemp );
         if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
-        { // 写入SD卡
-          
+        { // 写入SD卡      
         }
         if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
         {
@@ -151,8 +150,10 @@ void main(void)
       if(step==30) // step=30说明测量结果
       { 
         Find_Hign_Low_BP();                    //计算高低血压值
-        // BP_High 和 BP_Low
-        step =101;
+        step = 101;
+        Device_waite_time1 = 0;
+        // 释放申请的空间
+        HalBPMeasStop();
         if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
         {
           Show_Wait_Symbol("Off_IDLE");
@@ -175,8 +176,7 @@ void main(void)
           OLED_ShowNum(HR_Show2Num_Start_X,HR_Show2Num_Start_Y,BP_Low,2,32);              
         else
           OLED_ShowNum(HR_Show3Num_Start_X ,HR_Show3Num_Start_Y,BP_Low,3,32);
-        OLED_Refresh_Gram();                  
-        BPSystemStatus = BP_OFFLINE_IDLE;
+        OLED_Refresh_Gram();
       }
     } 
   }              
@@ -330,6 +330,7 @@ __interrupt void USART0_RX_ISR(void)
 {
   static uint8 receiveFlag = 0;
   static uint8 controlMessage = 0;
+  Device_waite_time1 = 0;
   uint8 receiveMessage = RXBUF0;
   switch(receiveFlag)
   {
@@ -353,7 +354,6 @@ __interrupt void USART0_RX_ISR(void)
             {
               if(BPSystemStatus == BP_ON_SLEEP)
               {
-                Device_waite_time1 = 0;
                 LPM0_EXIT;
                 OLED_SLEEP(0);
               }
@@ -393,11 +393,11 @@ __interrupt void USART0_RX_ISR(void)
             }
             if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP) // 在线或离线睡眠状态
             {
-              Device_waite_time1 = 0;
               LPM0_EXIT;
               OLED_SLEEP(0);      
             }
             BPSystemStatus = BP_FIND_NETWORK;
+            OLED_Clear();
             OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
             OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
             Show_Wait_Symbol("FIND_NWK");    
@@ -415,7 +415,6 @@ __interrupt void USART0_RX_ISR(void)
               Stop_BPMeasure();
             if(BPSystemStatus == BP_ON_SLEEP) // 睡眠状态下关闭网络
             {
-              Device_waite_time1 = 0;
               LPM0_EXIT;
               OLED_SLEEP(0);                 
             }            
@@ -454,20 +453,10 @@ __interrupt void Port_1(void)
   if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP)    //处于睡眠态，长按短按都是进入等待态
   {
     LPM0_EXIT;
-    OLED_Clear();
-    OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-    OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");
     if(BPSystemStatus == BP_OFF_SLEEP) // 离线睡眠状态
-    {
-      BPSystemStatus = BP_OFFLINE_IDLE;    
-      Show_Wait_Symbol("Off_IDLE");    
-    }
+      BPSystemStatus = BP_OFFLINE_IDLE;     
     if(BPSystemStatus == BP_ONLINE_IDLE) // 在线睡眠状态
-    {
-      BPSystemStatus = BP_ONLINE_IDLE;    
-      Show_Wait_Symbol("On_IDLE ");   
-    }
-    OLED_Refresh_Gram();
+      BPSystemStatus = BP_ONLINE_IDLE;
   }
   else                                                                   //处于等待状态或是测量状态有按键按下
   {
@@ -561,10 +550,10 @@ __interrupt void Port_1(void)
 void Start_BPMeasure(void)
 {
   // 申请空间
-  if(BPSystemStatus == BP_OFFLINE_IDLE) // 离线空闲状态
+  if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线空闲状态
   {
   }
-  if(BPSystemStatus == BP_ONLINE_IDLE) // 在线空闲状态
+  if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线空闲状态
     HalBPMeasStart(BP_BUFFER_FOR_ZIGBEE);
   
   writeNum = 0;
@@ -901,7 +890,7 @@ void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint1
   writeNum++;
   if(writeNum == 16)
   {
-    HalBPMeasWriteToBuf(BP_HIGH_temp);
+    BufOpStatus = HalBPMeasWriteToBuf(BP_HIGH_temp);
     BufOpStatus = HalBPMeasWriteToBuf(BP_LOW_temp);
     bufferFullFlag = 1;
     writeNum = 0;
