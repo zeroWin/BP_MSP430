@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////	
 //---------------------------头文件--------------------------
 #include "hal_type.h"
-#include "msp430f5528.h"
+#include  <msp430x14x.h>
 //---------------------------SD卡类型定义 -------------------------- 
 #define SD_TYPE_ERR     0X00		//无卡或卡不能识别
 #define SD_TYPE_MMC     0X01		//MMC卡
@@ -55,8 +55,8 @@
 #define	SD_GPIO_CS_PORT							1
 #define SD_CS_GPIO_PIN							2		//P1.2:CS
 
-#define SD_CS_H P3OUT |= BIT2	     // P3.2 CS = 1 
-#define SD_CS_L P3OUT &= ~BIT2      // p3.2 CS = 0
+#define SD_CS_H P5OUT |= BIT0	     // P5.0 CS = 1 
+#define SD_CS_L P5OUT &= ~BIT0       // P5.0 CS = 0
 
 //--------------------------- 相关定值宏定义 -------------------------- 
 #define DUMMY_DATA 0xFF			//不被SD卡识别的命令值，用于产生时钟信号

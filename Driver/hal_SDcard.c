@@ -235,7 +235,7 @@ uint8 SD_SPI_ReadWriteByte(uint8 data)
  */
 void SD_SPI_SpeedLow(void)
 {
- 	SPI1_SetSpeed_Low();//设置到低速模式	
+  SPI1_SetSpeed_Low();//设置到低速模式	
 }
 
 /*
@@ -378,8 +378,8 @@ void SD_SPI_Init(void)
   SPI1_Config_Init();	//SPI模块初始化
   
   // 初始化CS端口
-  P3SEL &= ~BIT2;    // 普通端口功能
-  P3DIR |= BIT2;     // 输出
+  P5SEL &= ~BIT0;    // 普通端口功能
+  P5DIR |= BIT0;     // 输出
   
   SD_CS_H;		//拉高CS释放SPI总线
 }

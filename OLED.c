@@ -483,8 +483,8 @@ void write_oled_data(unsigned char ucData)
 [6]0 1 2 3 ... 127
 [7]0 1 2 3 ... 127
 */
-u8 OLED_GRAM[128][8]; //横坐标 128，纵坐标8page
-
+//u8 OLED_GRAM[128][8]; //横坐标 128，纵坐标8page
+u8 OLED_GRAM[1][1]; //横坐标 128，纵坐标8page
 /*
  * 函数名：OLED_Refresh_Gram
  * 描述  ：更新显示

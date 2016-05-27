@@ -42,7 +42,7 @@
  *                                             INCLUDES
  ***************************************************************************************************/
 #include "hal_spi_user.h"
-#include "msp430f5528.h"
+#include  <msp430x14x.h>
 /***************************************************************************************************
  *                                             CONSTANTS
  ***************************************************************************************************/
@@ -81,25 +81,21 @@
  **************************************************************************************************/
 void SPI1_Config_Init(void)
 {
-  P3SEL |= BIT3 + BIT4; // P3.3 P3.4 设置成复用功能
-  P3DIR |= BIT3;        // P3.3 设置为输出 SIMO
-  P3DIR &= ~BIT4;       // P3.4 设置成输入 SOMI
-  
-  P2SEL |= BIT7;        // P2.7 设置成复用功能
-  P2DIR |= BIT7;        // P2.7 设置成输出
-  
-    
-  UCA0CTL1 |= UCSWRST;               		// Enable SW reset
-  UCA0CTL0 |= UCMSB+UCMST+UCSYNC;	        // [b0]   1 -  Synchronous mode 这一位就是用来选择是UART(set 0) 还是 SPI模式(set 1)的
-                                                // [b2-1] 00-  3-pin SPI
-                                                // [b3]   1 -  Master mode
-                                                // [b4]   0 - 8-bit data
-                                                // [b5]   1 - MSB first
-                                                // [b6]   0 - Clock polarity low
-                                                // [b7]   0 - Clock phase - Data is changed on the first UCLK edge and captured on the following edge.
-  
-  UCA0CTL1 |= UCSSEL_2;               	// select SMCLK as clock source 16Mhz
-  UCA0CTL1 &= ~UCSWRST;                 // Clear SW reset, resume operation
+  P5SEL |= BIT1 + BIT2 + BIT3; // P5.1 P5.2 P5.3 设置成复用功能
+  P5DIR |= BIT1 + BIT3;        // P5.1 设置为输出 SIMO P5.3 设置成输出CLK
+  P5DIR &= ~BIT2;              // P5.2 设置成输入 SOMI
+   
+  ME2 |= USPIE1;                // 允许USART1的SPI模式
+  U1CTL |= CHAR + SYNC + MM;	                // [b0]   0 -  使能可以改变状态
+                                                // [b1]   1 - USART is master
+                                                // [b2]   1 - SPI mode
+                                                // [b3]   0 - One stop mode
+                                                // [b4]   1 - 8-bit data
+                                                // [b5]   0 - SPImode
+                                                // [b6]   Unused
+                                                // [b7]   Unused
+  U1TCTL = SSEL1 + STC;                         // smclk 8Mhz 3-pin SPI
+  U1CTL &= ~SWRST;
 }
 
 
@@ -116,9 +112,9 @@ uint8 SPI1_ReadWriteByte(uint8 TxData)
 {
   uint8 RxData;
   
-  UCA0TXBUF = TxData;
-  while(!(UCA0IFG & UCRXIFG));//等待接收完成
-  RxData = UCA0RXBUF;
+  TXBUF1 = TxData;
+  while(!(IFG2 & URXIFG1));//等待接收完成
+  RxData = RXBUF1;
   
   return RxData;
 }
@@ -135,10 +131,10 @@ uint8 SPI1_ReadWriteByte(uint8 TxData)
  **************************************************************************************************/
 void SPI1_SetSpeed_Low(void)
 {
-    UCA0CTL1 |= UCSWRST;               		// Enable SW reset
-    UCA0BR0 = 0x8B;                                // 16MHz/138(8b) = 115200
-    UCA0BR1 = 0;     
-    UCA0CTL1 &= ~UCSWRST;                         // Clear SW reset, resume operation
+    U1CTL |= SWRST;               		// Enable SW reset
+    UBR01 = 0x45;                               // 8MHz/69(45) = 115200
+    UBR11 = 0;     
+    U1CTL &= ~SWRST;                            // Clear SW reset, resume operation
 }
 
 
@@ -153,8 +149,8 @@ void SPI1_SetSpeed_Low(void)
  **************************************************************************************************/
 void SPI1_SetSpeed_High(void)
 {
-    UCA0CTL1 |= UCSWRST;               		// Enable SW reset
-    UCA0BR0 = 0x01;                                // 16 MHz
-    UCA0BR1 = 0;     
-    UCA0CTL1 &= ~UCSWRST;                         // Clear SW reset, resume operation
+    U1CTL |= SWRST;               		// Enable SW reset
+    UBR01 = 0x02;                             // 8 MHz /2 = 4Mhz
+    UBR11 = 0;     
+    U1CTL &= ~SWRST;                         // Clear SW reset, resume operation
 }

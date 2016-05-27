@@ -13,6 +13,9 @@
 #include "hal_delay.h"
 #include "main.h"
 #include "hal_BP_measure.h"
+#include "hal_SDcard.h"
+#include "exfuns.h"
+#include "ff.h"
 /*****************************************************************************
 变量定义
 ******************************************************************************/
@@ -55,7 +58,6 @@ void Init_Clock();
 void Init_Port1();
 void Init_Port2();
 void Init_Port4();
-void Init_Port5();
 void Init_Port6();
 void Init_TimerA();
 void Stop_BPMeasure(void);
@@ -93,6 +95,12 @@ void main(void)
   P2OUT &= ~BIT4;
   UART1_Config_Init();                     // UART-CC2530初始化
   HalRTCInit();                            // DS1302 初始化
+  // SD卡初始化
+//  while(SD_Initialize());
+//  exfuns_init();
+//  f_mount(0,fs);      // 挂载文件系统  
+//  f_mkdir("0:S");     // 创建文件夹  
+  
   Init_Port4();
   Init_Port6();                             
   //VALVE_OFF();                             //通道0 控制电磁阀
@@ -784,26 +792,7 @@ void Init_Port4()
        P4DIR |= BIT4;                           //OLED D1---------->SDIN
        P4OUT |= BIT4;       
 }
-/*****************************************************************************
-端口P5初始化 SD卡相关端口
-*****************************************************************************/
-void Init_Port5()
-{
-       P5DIR |= BIT0;                            //microsd CSB
-       P5OUT |= BIT0;
-       P5SEL |= 0x0E;                            // P5.1,2,3 SPI option select
-       P5OUT &= ~0x01;
-       P5DIR |= 0x01;                            //Reset Slave
-       P5DIR &= ~0x01;
-       U1CTL = CHAR + SYNC + MM + SWRST;         // 8-bit, SPI, Master
-       U1TCTL = CKPL + SSEL1 + STC;              // Polarity, SMCLK, 3-wire
-       U1BR0 = 0x02;                             // SPICLK = SMCLK/2
-       U1BR1 = 0x00;
-       U1MCTL = 0x00;
-       ME2 |= USPIE1;                            // Module enable
-       U1CTL &= ~SWRST;                          // SPI enable
-       IE2 |= URXIE1 + UTXIE1;                   // RX and TX interrupt enable
-}
+
 /*****************************************************************************
 端口P6初始化 ADC
 *****************************************************************************/
@@ -884,14 +873,13 @@ void Write_8402(u16 data_8402)
 
 void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
 {
-  BufOpStatus_t BufOpStatus;
   HalBPMeasWriteToBuf(DC_temp);
   HalBPMeasWriteToBuf(AC_temp);
   writeNum++;
   if(writeNum == 16)
   {
-    BufOpStatus = HalBPMeasWriteToBuf(BP_HIGH_temp);
-    BufOpStatus = HalBPMeasWriteToBuf(BP_LOW_temp);
+    HalBPMeasWriteToBuf(BP_HIGH_temp);
+    HalBPMeasWriteToBuf(BP_LOW_temp);
     bufferFullFlag = 1;
     writeNum = 0;
   }
