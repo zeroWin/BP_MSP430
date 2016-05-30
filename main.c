@@ -193,7 +193,7 @@ void main(void)
 /*****************************************************************************
 定时器A中断服务程序
 *****************************************************************************/
-uint16 aa = 0;
+uint16 aa = 2000;
 #pragma vector=TIMERA0_VECTOR
 __interrupt void Timer_A (void)
 {
@@ -280,11 +280,11 @@ __interrupt void Timer_A (void)
        }
        if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
        {
-         //SendDCAndACToCC2530(BP_DC,BP_AC,100,100);
-         SendDCAndACToCC2530(aa,aa,100,100);
-         aa++;
-         if(aa==600)
-           aa = 0;
+         SendDCAndACToCC2530(BP_DC,BP_AC,100,100);
+//         SendDCAndACToCC2530(aa,aa,100,100);
+//         aa++;
+//         if(aa==3000)
+//           aa = 0;
        }
        if(last_is_low==1)
        {
@@ -814,7 +814,7 @@ void Init_Port6()
 void Init_TimerA()
 {
   CCTL0 &= ~CCIE;                           // CCR0 interrupt Disabled
-  CCR0 = 64-1;                              // 256,定时器每秒产生中断256次,采样率256Hz
+  CCR0 = 128-1;                              // 256,定时器每秒产生中断256次,采样率256Hz
   TACTL = TASSEL_1 + MC_1;                  // ACLK, upmode
 }
 /*****************************************************************************
@@ -887,12 +887,18 @@ void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint1
 
 void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
 {
-  uint8 i;
+  uint8 i,bufferSend[68];
   for(i = 0; i < 64; ++i)
-    UART1_Send_Byte(0xFF);
+    bufferSend[i] = 0xFF;
   
-  UART1_Send_Byte(BP_HIGH_temp & 0x00FF);
-  UART1_Send_Byte((BP_HIGH_temp & 0xFF00) >> 8);
-  UART1_Send_Byte(BP_LOW_temp & 0x00FF);
-  UART1_Send_Byte((BP_LOW_temp & 0xFF00) >> 8);  
+  bufferSend[i++] = (BP_HIGH_temp & 0x00FF);
+  bufferSend[i++] = ((BP_HIGH_temp & 0xFF00) >> 8);
+  bufferSend[i++] = (BP_LOW_temp & 0x00FF);
+  bufferSend[i++] = ((BP_LOW_temp & 0xFF00) >> 8); 
+  delay_ms(15);
+  UART1_Send_Buffer(bufferSend,68);
+  delay_ms(15);
+  UART1_Send_Buffer(bufferSend,68);
+  delay_ms(15);
+  UART1_Send_Buffer(bufferSend,68);
 }
