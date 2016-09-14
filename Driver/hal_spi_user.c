@@ -94,7 +94,7 @@ void SPI1_Config_Init(void)
                                                 // [b5]   0 - SPImode
                                                 // [b6]   Unused
                                                 // [b7]   Unused
-  U1TCTL = SSEL1 + STC;                         // smclk 8Mhz 3-pin SPI
+  U1TCTL = CKPH + SSEL1 + STC;                         // smclk 8Mhz 3-pin SPI
   U1CTL &= ~SWRST;
 }
 
