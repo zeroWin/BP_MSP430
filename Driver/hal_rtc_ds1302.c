@@ -163,7 +163,7 @@ void HalRTCInit(void)
   if(HalRTCDS1302OK() == FALSE)
   {
     /* Setting DS1302 default time */
-    /* 2016-4-26 00:00:00 周二 */
+    /* 2016-5-1 00:00:00 周二 */
     RTCStruct_t RTCStruct;
     HalRTCStructInit(&RTCStruct,0,0,0,1,5,2,16);
     HalRTCGetOrSetFull(RTC_DS1302_SET,&RTCStruct);

@@ -5,6 +5,8 @@
 //******************************************************************************
 #include  <msp430f1611.h>
 #include  <math.h>
+#include <string.h>
+#include <stdlib.h>
 #include  "typedefs.h"
 #include "hal_oled.h"
 #include "hal_battery_monitor.h"
@@ -75,14 +77,19 @@ extern void write_oled_command(unsigned char ucCmd);
 extern void write_oled_data(unsigned char ucData);
 unsigned int adc2mmhg(unsigned int adc);
 void RBUF_PROCESS(void);
-int abs(int a);
 void Find_Hign_Low_BP();
 void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint16 BP_LOW_temp);
 void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp);
+void SendDCAndACToSDcard(uint16 DC_temp,uint16 AC_temp);
+void GenericApp_GetWriteName(void);
+bool GenericApp_OpenDir(void);
+
 
 BPSystemStatus_t BPSystemStatus;
-uint8 writeNum;
+uint16 writeNum;
 uint8 bufferFullFlag;
+char fileName[30]; // store file name
+char pathname[30]; // read file name
 /*****************************************************************************
 主程序
 *****************************************************************************/
@@ -95,23 +102,23 @@ void main(void)
   Init_Port2();
   P2OUT &= ~BIT4;
   
-  //HalBattMonInit();   //Initialize Battery monitor
+
   // Init UART to CC2530
   UART1_Config_Init(); 
   // RTC初始化
   HalRTCInit(); 
   // Initialize OLED
   HalOledInit();    
-  //HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-  // SD卡初始化
-//  while(SD_Initialize());
-//  exfuns_init();
-//  f_mount(0,fs);      // 挂载文件系统  
-//  f_mkdir("0:S");     // 创建文件夹  
   
-  //Init_Port4();
+  // SD卡初始化
+  while(SD_Initialize());
+  exfuns_init();
+  f_mount(0,fs);      // 挂载文件系统  
+  f_mkdir("0:B");     // 创建文件夹  
+  
   Init_Port6();                             
-  //VALVE_OFF();                             //通道0 控制电磁阀
+  HalBattMonInit();   //Initialize Battery monitor
+  
   VALVE_ON();
   PUMP_OFF();                              //通道1 控制气泵
   Init_TimerA();
@@ -152,7 +159,8 @@ void main(void)
       {
         HalBPMeasReadFromBuf( &dataTemp );
         if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
-        { // 写入SD卡      
+        { // 写入SD卡
+          f_write(file,dataTemp,512,&bw);
         }
         if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
         {
@@ -170,6 +178,7 @@ void main(void)
         HalBPMeasStop();
         if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
         {
+          f_close(file);
           Show_Wait_Symbol("Off_IDLE");
           BPSystemStatus = BP_OFFLINE_IDLE;
         }
@@ -281,6 +290,8 @@ __interrupt void Timer_A (void)
        // 只传输此时的采样值
        if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
        {
+         SendDCAndACToSDcard(BP_DC,BP_AC);
+         //SendDCAndACToSDcard(0x4141,0x4242);
        }
        if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
        {
@@ -558,6 +569,9 @@ void Start_BPMeasure(void)
   // 申请空间
   if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线空闲状态
   {
+     HalBPMeasStart(BP_BUFFER_FOR_SD);
+     GenericApp_GetWriteName();
+     f_open(file,fileName,FA_CREATE_ALWAYS | FA_WRITE);     
   }
   if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线空闲状态
     HalBPMeasStart(BP_BUFFER_FOR_ZIGBEE);
@@ -583,7 +597,9 @@ void Stop_BPMeasure(void)
   CCTL0 &= ~CCIE;
   // 释放申请的空间
   HalBPMeasStop();
-  
+  // 关闭文件
+  if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
+    f_close(file);
   step =101;
   PUMP_OFF();
   VALVE_ON(); //放气
@@ -599,14 +615,7 @@ unsigned int adc2mmhg(unsigned int adc)
   return (int)(abp);
   //return (int)((adc*3.3/4095)/233.56)*1000*15.52;
 }
-/*****************************************************************************
-绝对值函数
-*****************************************************************************/
-int abs(int a)
-{
-if(a<0)a=-a;
-return a;
-}
+
 /*****************************************************************************
 收缩压舒张压计算
 *****************************************************************************/
@@ -796,15 +805,15 @@ void Init_Port4()
 *****************************************************************************/
 void Init_Port6()
 {
-       P6SEL |= 0x03;                    // Enable A/D channel inputs
-       ADC12CTL0 = ADC12ON+MSC+SHT0_2;  //+REFON+ REF2_5V;//+SHT0_8;//+REFON+ REF2_5V; 
+  P6SEL |= 0x03;                    // Enable A/D channel inputs
+  ADC12CTL0 = ADC12ON+MSC+SHT0_2;  //+REFON+ REF2_5V;//+SHT0_8;//+REFON+ REF2_5V; 
                                         // Turn on ADC12, extend sampling time 
                                         // to avoid overflow of results
-       ADC12CTL1 = SHP+CONSEQ_1;        // Use sampling timer, repeated sequence
-       ADC12MCTL0 = INCH_0+SREF_0;      // ref+=AVcc, channel = A0
-       ADC12MCTL1 = INCH_1+EOS+SREF_0;  // ref+=AVcc, channel = A1
-       //ADC12IE = 0x02;                // Enable ADC12IFG.3
-       ADC12CTL0 |= ENC;                // Enable conversions
+  ADC12CTL1 = SHP+CONSEQ_1;        // Use sampling timer, repeated sequence
+  ADC12MCTL0 = INCH_0+SREF_0;      // ref+=AVcc, channel = A0
+  ADC12MCTL1 = INCH_1+EOS+SREF_0;  // ref+=AVcc, channel = A1
+  //ADC12IE = 0x02;                // Enable ADC12IFG.3
+  ADC12CTL0 |= ENC;                // Enable conversions
 }
 /*****************************************************************************
 定时器A初始化
@@ -883,6 +892,18 @@ void SendDCAndACToCC2530(uint16 DC_temp,uint16 AC_temp,uint16 BP_HIGH_temp,uint1
   }
 }
 
+
+void SendDCAndACToSDcard(uint16 DC_temp,uint16 AC_temp)
+{
+  HalBPMeasWriteToBuf(DC_temp);
+  HalBPMeasWriteToBuf(AC_temp);
+  writeNum++;
+  if(writeNum == 128)
+  {
+    bufferFullFlag = 1;
+    writeNum = 0;
+  }
+}
 void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
 {
   uint8 i,bufferSend[68];
@@ -904,7 +925,7 @@ void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
 void Show_Wait_Symbol(const char *p)
 {
     HalOledShowString(SPO2_Symbol_Start_X,0,12,p);
-    HalOledShowString(SPO2_Symbol_Start_X+88,0,12,"mmHg");
+//    HalOledShowString(SPO2_Symbol_Start_X+88,0,12,"mmHg");
     HalOledShowWaitSymbol(SPO2_Wait_Symbol_Start_X,SPO2_Wait_Symbol_Start_Y,1);
     HalOledShowWaitSymbol(SPO2_Wait_Symbol_Start_X+16,SPO2_Wait_Symbol_Start_Y,1);
     HalOledShowWaitSymbol(SPO2_Wait_Symbol_Start_X+32,SPO2_Wait_Symbol_Start_Y,1);
@@ -913,9 +934,131 @@ void Show_Wait_Symbol(const char *p)
     HalOledShowWaitSymbol(HR_Wait_Symbol_Start_X+32,HR_Wait_Symbol_Start_Y,1);
     
     // 显示电量
-    //HalShowBattVol(BATTERY_MEASURE_SHOW);
+    HalShowBattVol(BATTERY_MEASURE_SHOW);
 }
 
 
+/*********************************************************************
+ * @fn      GenericApp_GetWriteName
+ *
+ * @brief   Get the RTC time and make file name.
+ *
+ * @param   char *
+ *          0:D/20xx-xx-xx xx-xx-xx x.txt + \0 = 30Byte
+ *
+ * @return  
+ *
+ */
+void GenericApp_GetWriteName(void)
+{
+  RTCStruct_t RTCStruct;
+  HalRTCGetOrSetFull(RTC_DS1302_GET,&RTCStruct);
 
+  // Make file name
+  fileName[0] = '0';
+  fileName[1] = ':';
+  fileName[2] = 'B';
+  fileName[3] = '/';
+  fileName[4] = '2';
+  fileName[5] = '0';
+  fileName[6] = RTCStruct.year/10 + '0';
+  fileName[7] = RTCStruct.year%10 + '0';
+  fileName[8] = '-';
+  fileName[9] = RTCStruct.month/10 + '0';
+  fileName[10] = RTCStruct.month%10 + '0';
+  fileName[11] = '-';
+  fileName[12] = RTCStruct.date/10 + '0';
+  fileName[13] = RTCStruct.date%10 + '0';
+  fileName[14] = ' ';
+  fileName[15] = RTCStruct.hour/10 + '0';
+  fileName[16] = RTCStruct.hour%10 + '0';
+  fileName[17] = '-';
+  fileName[18] = RTCStruct.min/10 + '0';
+  fileName[19] = RTCStruct.min%10 + '0';
+  fileName[20] = '-';
+  fileName[21] = RTCStruct.sec/10 + '0';
+  fileName[22] = RTCStruct.sec%10 + '0';
+  fileName[23] = ' ';  
+  fileName[24] = RTCStruct.week + '0';
+  fileName[25] = '.';
+  fileName[26] = 't';
+  fileName[27] = 'x';
+  fileName[28] = 't';
+  fileName[29] = '\0';
+}
 
+/*********************************************************************
+ * @fn      GenericApp_OpenDir
+ *
+ * @brief   找到指定目录下文件
+ *
+ * @param  
+ *
+ * @return  true is over,flase is not over
+ *
+ */
+bool GenericApp_OpenDir(void)
+{
+  uint8 res = 0;
+  DIR *fddir = 0;         // 目录
+  FILINFO *finfo = 0;     // 文件信息
+  uint8 *fn = 0;          // 长文件名
+  
+  // initilize pathname
+  strcpy(pathname,"0:S/");
+  
+  // 申请内存
+  fddir = (DIR *)malloc(sizeof(DIR));
+  finfo = (FILINFO *)malloc(sizeof(FILINFO));
+  if(fddir == NULL || finfo == NULL)
+  {
+    if(fddir != NULL)
+      free(fddir);
+    if(finfo != NULL)
+      free(finfo);
+    return FALSE;
+  }
+  
+  finfo->lfsize = 28 + 1;
+  finfo->lfname = malloc(finfo->lfsize);
+  if(finfo->lfname == NULL)
+  {
+    free(finfo->lfname);
+    free(fddir);
+    free(finfo);
+    return FALSE;
+  }
+  
+  // 打开源目录
+  res = f_opendir(fddir,"0:S");
+
+  if(res == 0)  // 打开目录成功
+  {
+    while(res == 0)
+    {
+      res = f_readdir(fddir,finfo);   //读取目录下的一个文件
+     
+      if(res != FR_OK || finfo->fname[0] == 0) // 出错或者读到了结尾
+      {
+        free(finfo->lfname);
+        free(fddir);
+        free(finfo);
+        return FALSE;
+      }
+      
+      if(finfo->fname[0] == '.') // 忽略上层文件
+        continue;
+      
+      /* 存在文件,保存字符串 */
+      fn = (uint8 *)(*finfo->lfname?finfo->lfname:finfo->fname);
+      strcat((char *)pathname,(char *)fn);
+      
+      break;
+    }
+  }
+  
+  free(finfo->lfname);
+  free(fddir);
+  free(finfo);
+  return TRUE;  
+}

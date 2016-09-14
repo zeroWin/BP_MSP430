@@ -108,12 +108,10 @@ void HalBattMonInit(void)
   // 初始化ADC端口
   BATTER_MONITOR_PORT_SEL |= (1 << BATTER_MONIROT_PIN);  // 设置端口为ADC功能
   BATTER_MONITOR_PORT_DIR &= ~(1 << BATTER_MONIROT_PIN); // 设置端口为输入
-  ADC12CTL0 &= ~ENC;
-  ADC12CTL0 = SHT0_10; // 使能ADC，转换时间为512个ADCCLK
-  ADC12CTL1 = ADC12SSEL0 + ADC12SSEL1 + SHP; // SMCLK
-  ADC12MCTL0 = SREF_0 + INCH_2; // 参考电压AVCC 3.3V，通道2
+
+  ADC12MCTL2 = SREF_0 + INCH_2; // 参考电压AVCC 3.3V，通道2
   
-  HalGetBattVol();
+ // HalGetBattVol();
 }
 
 
@@ -130,9 +128,9 @@ float HalGetBattVol(void)
 {
   float tempVol;
   
-  // ADC12使能
-  ADC12CTL0 |= ADC12ON;
-  ADC12CTL0 |= ENC;
+//  // ADC12使能
+//  ADC12CTL0 |= ADC12ON;
+//  ADC12CTL0 |= ENC;
   
   BATTER_MINITOR_ENABLE;    // Enable BATT_MON_EN, P0.1 high
   
@@ -140,15 +138,14 @@ float HalGetBattVol(void)
   while(!(ADC12IFG & BIT0)) // 等待转换结束
   //max value = 0xfff/2, battery voltage = input voltage x 2
   //ref volage=3.3V
-  tempVol = ADC12MEM0;    
-  //tempVol = ADC12MEM0;    
+  tempVol = ADC12MEM2;
   tempVol = (tempVol/4095)*3.3*2;
   ADC12IFG = 0; // 清空中断标志位
   BATTER_MINITOR_DISABLE;   // Disable BATT_MON_EN, P0.1 low
   
-  // 关闭AD节能
-  ADC12CTL0 &= ~ENC;
-  ADC12CTL0 &= ~ADC12ON;
+//  // 关闭AD节能
+//  ADC12CTL0 &= ~ENC;
+//  ADC12CTL0 &= ~ADC12ON;
 
   
   return tempVol;

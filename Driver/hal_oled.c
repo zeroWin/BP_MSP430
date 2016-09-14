@@ -99,14 +99,9 @@ void Set_xy(uint8 x,uint8 y);
  **************************************************************************************************/
 void HalOledInit(void)
 {
-  //P1SEL &= ~BIT5;
-  //P3SEL &= ~(BIT1 + BIT0);
-  P4SEL &= ~(BIT0 + BIT1 + BIT2 + BIT3);  
-  //P4DIR |= BIT0;
+  P4SEL &= ~(BIT0 + BIT1 + BIT2 + BIT3);
+  P4DIR |= BIT0;
   P4OUT &= ~BIT0;
-  //P4DIR |= BIT1;  
-  //P4DIR |= BIT2;  
-  //P4DIR |= BIT3;  
   SCL_H_OUT;
   SDA_H_OUT;
   RST_H_OUT;
