@@ -41,30 +41,32 @@
  *                                             INCLUDES
  ***************************************************************************************************/
 #include "hal_battery_monitor.h"
-#include "msp430f5528.h"
- 
+#include "msp430f1611.h"
+#include "hal_oled.h"
+#include "math.h"
+
 /***************************************************************************************************
  *                                             CONSTANTS
  ***************************************************************************************************/
-/* Batter Monitor enable/disable at P6.0
+/* Batter Monitor enable/disable at P2.2
 */
-#define BATTER_MONITOR_EN_PORT_SEL   P6SEL
-#define BATTER_MONITOR_EN_PORT_DIR   P6DIR
-#define BATTER_MONITOR_EN_PORT       P6OUT
-#define BATTER_MONIROT_EN_PIN        0
+#define BATTER_MONITOR_EN_PORT_SEL   P2SEL
+#define BATTER_MONITOR_EN_PORT_DIR   P2DIR
+#define BATTER_MONITOR_EN_PORT       P2OUT
+#define BATTER_MONIROT_EN_PIN        2
 
-/* Set ADC channel and resolution P6.1  Analog input A1 – ADC
+/* Set ADC channel and resolution P6.2  Analog input A2 – ADC
 */
 #define BATTER_MONITOR_PORT_SEL   P6SEL
 #define BATTER_MONITOR_PORT_DIR   P6DIR
-#define BATTER_MONIROT_PIN        1
+#define BATTER_MONIROT_PIN        2
 
    
 /***************************************************************************************************
  *                                              MACROS
  ***************************************************************************************************/
-#define BATTER_MINITOR_ENABLE       P6OUT |= (1 << BATTER_MONIROT_EN_PIN)
-#define BATTER_MINITOR_DISABLE      P6OUT &= ~(1 << BATTER_MONIROT_EN_PIN)
+#define BATTER_MINITOR_ENABLE       P2OUT |= (1 << BATTER_MONIROT_EN_PIN)
+#define BATTER_MINITOR_DISABLE      P2OUT &= ~(1 << BATTER_MONIROT_EN_PIN)
 
 
 /***************************************************************************************************
@@ -106,11 +108,10 @@ void HalBattMonInit(void)
   // 初始化ADC端口
   BATTER_MONITOR_PORT_SEL |= (1 << BATTER_MONIROT_PIN);  // 设置端口为ADC功能
   BATTER_MONITOR_PORT_DIR &= ~(1 << BATTER_MONIROT_PIN); // 设置端口为输入
-  ADC12CTL0 &= ~ADC12ENC;
-  ADC12CTL0 = ADC12SHT0_10; // 使能ADC，转换时间为512个ADCCLK
-  ADC12CTL1 = ADC12SSEL0 + ADC12SSEL1 + ADC12SHP; // SMCLK
-  ADC12CTL2 = ADC12TCOFF + ADC12RES_2;   // 关闭温度传感器节能,12bit转换精度
-  ADC12MCTL0 = ADC12SREF_0 + ADC12INCH_1; // 参考电压AVCC 3.3V，通道1
+  ADC12CTL0 &= ~ENC;
+  ADC12CTL0 = SHT0_10; // 使能ADC，转换时间为512个ADCCLK
+  ADC12CTL1 = ADC12SSEL0 + ADC12SSEL1 + SHP; // SMCLK
+  ADC12MCTL0 = SREF_0 + INCH_2; // 参考电压AVCC 3.3V，通道2
   
   HalGetBattVol();
 }
@@ -131,7 +132,7 @@ float HalGetBattVol(void)
   
   // ADC12使能
   ADC12CTL0 |= ADC12ON;
-  ADC12CTL0 |= ADC12ENC;
+  ADC12CTL0 |= ENC;
   
   BATTER_MINITOR_ENABLE;    // Enable BATT_MON_EN, P0.1 high
   
@@ -146,7 +147,7 @@ float HalGetBattVol(void)
   BATTER_MINITOR_DISABLE;   // Disable BATT_MON_EN, P0.1 low
   
   // 关闭AD节能
-  ADC12CTL0 &= ~ADC12ENC;
+  ADC12CTL0 &= ~ENC;
   ADC12CTL0 &= ~ADC12ON;
 
   
@@ -177,58 +178,58 @@ uint8 HalShowBattVol(uint8 fThreshold)
   
   if(fThreshold_temp >= 4.000)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12,"100%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12,"100%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,10);  //100%
   }
   else if(fThreshold_temp >= 3.900)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 90%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 90%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,9);  //90%
   }
   else if(fThreshold_temp >= 3.800)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 80%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 80%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,8);   //80%
   }
   else if(fThreshold_temp >= 3.700)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 70%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 70%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,7);   //70%
   }
   else if(fThreshold_temp >= 3.600)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 60%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 60%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,6);   //60%
   }
   else if(fThreshold_temp >= 3.500)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 50%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 50%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,5);   //50%
   }
   else if(fThreshold_temp >= 3.400)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 40%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 40%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,4);   //40%
   }
   else if(fThreshold_temp >= 3.300)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 30%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 30%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,3);   //30%
   }
   else if(fThreshold_temp >= 3.200)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 20%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 20%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,2);   //20%
   }
   else if(fThreshold_temp >= 3.100)
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 10%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12," 10%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,1);  //10%---警告电量，屏幕只显示LowPower
     return 1;
   }
   else
   {
-    OLED_ShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12,"  0%");
+    HalOledShowString(BATTER_CYCLE_X,BATTER_CYCLE_Y,12,"  0%");
     HalOledShowPowerSymbol(BATTER_CYCLE_X+28,BATTER_CYCLE_Y,1,0);  //0%---屏幕黑屏
     return 2;
   }

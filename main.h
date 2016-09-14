@@ -76,6 +76,36 @@ typedef enum
 } BPSystemStatus_t;
 
 
+#define SPO2_Wait_Symbol_Start_X 11
+#define SPO2_Wait_Symbol_Start_Y 44
+
+#define HR_Wait_Symbol_Start_X   76
+#define HR_Wait_Symbol_Start_Y   44
+
+#define SPO2_Show3Num_Start_X   15
+#define SPO2_Show3Num_Start_Y   36
+
+#define HR_Show3Num_Start_X     76   
+#define HR_Show3Num_Start_Y     36
+
+#define SPO2_Show2Num_Start_X   15
+#define SPO2_Show2Num_Start_Y   36
+
+#define HR_Show2Num_Start_X     83   
+#define HR_Show2Num_Start_Y     36
+
+#define SPO2_Symbol_Start_X     8
+#define SPO2_Symbol_Start_Y     16
+
+#define PR_Symbol_Start_X     88
+#define PR_Symbol_Start_Y     16
+
+#define Heart_Sympol_Start_X    65
+#define Heart_Sympol_Start_Y    0
+
+
+
+void Show_Wait_Symbol(const char *p);
 
 #endif /*AFE44x0_MAIN_H_*/
 

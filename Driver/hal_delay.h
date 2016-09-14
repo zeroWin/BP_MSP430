@@ -1,7 +1,7 @@
 #ifndef _HAL_DELAY_H
 #define _HAL_DELAY_H
 #include  "typedefs.h"
-#include  <msp430x14x.h>
+#include  <msp430f1611.h>
 
 
 extern void usDelay(int microeconds);

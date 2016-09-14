@@ -97,7 +97,7 @@
         </option>
         <option>
           <name>OGChipSelectMenu</name>
-          <state>MSP430F149	MSP430F149</state>
+          <state>MSP430F1611	MSP430F1611</state>
         </option>
         <option>
           <name>GStackHeapOverride</name>
@@ -2256,6 +2256,12 @@
   <group>
     <name>Driver</name>
     <file>
+      <name>$PROJ_DIR$\Driver\hal_battery_monitor.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_battery_monitor.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\Driver\hal_BP_measure.c</name>
     </file>
     <file>
@@ -2266,6 +2272,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\Driver\hal_delay.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_oled.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_oled.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</name>
@@ -2293,6 +2305,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\Driver\hal_uart_cc2530.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\OLED_FONT.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\Driver\PingPongBuf.c</name>
@@ -2336,12 +2351,6 @@
   </file>
   <file>
     <name>$PROJ_DIR$\main.h</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\OLED.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\oled_main.h</name>
   </file>
   <file>
     <name>$PROJ_DIR$\typedefs.h</name>

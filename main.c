@@ -3,10 +3,11 @@
 //  Nov 2013
 //  Built with IAR Embedded Workbench Version: 5.3
 //******************************************************************************
-#include  <msp430x14x.h>
+#include  <msp430f1611.h>
 #include  <math.h>
 #include  "typedefs.h"
-#include "oled_main.h"
+#include "hal_oled.h"
+#include "hal_battery_monitor.h"
 #include "hal_type.h"
 #include "hal_uart_cc2530.h"
 #include "hal_rtc_ds1302.h"
@@ -93,26 +94,31 @@ void main(void)
   Init_Port1();
   Init_Port2();
   P2OUT &= ~BIT4;
-  UART1_Config_Init();                     // UART-CC2530初始化
-  HalRTCInit();                            // DS1302 初始化
+  
+  //HalBattMonInit();   //Initialize Battery monitor
+  // Init UART to CC2530
+  UART1_Config_Init(); 
+  // RTC初始化
+  HalRTCInit(); 
+  // Initialize OLED
+  HalOledInit();    
+  //HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
   // SD卡初始化
 //  while(SD_Initialize());
 //  exfuns_init();
 //  f_mount(0,fs);      // 挂载文件系统  
 //  f_mkdir("0:S");     // 创建文件夹  
   
-  Init_Port4();
+  //Init_Port4();
   Init_Port6();                             
   //VALVE_OFF();                             //通道0 控制电磁阀
   VALVE_ON();
   PUMP_OFF();                              //通道1 控制气泵
   Init_TimerA();
   step=101;
-  oledinit();
-  OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-  OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+  HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+  HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
   Show_Wait_Symbol("Off_IDLE");    
-  OLED_Refresh_Gram();
   delay_ms(10);
   BPSystemStatus =  BP_OFFLINE_IDLE;
   _EINT();
@@ -121,7 +127,7 @@ void main(void)
     if(BPSystemStatus == BP_OFFLINE_IDLE || BPSystemStatus == BP_ONLINE_IDLE)       //离线等待状态
     {                                              
       //step=101;
-      OLED_SLEEP(0);                           //打开显示器 
+      HalOledOnOff(HAL_OLED_MODE_ON);                           //打开显示器 
       if(Device_waite_time1 <15000)
       {
         delay_ms(2);
@@ -137,7 +143,7 @@ void main(void)
     }
     else if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP)       //进入睡眠状态
     {
-      OLED_SLEEP(1);                             //关闭显示器        
+      HalOledOnOff(HAL_OLED_MODE_OFF);           //关闭显示器        
       _BIS_SR(LPM0_bits + GIE);                  //进入低功耗
     }
     else if(BPSystemStatus == BP_OFFLINE_MEASURE || BPSystemStatus == BP_ONLINE_MEASURE)     //测量状态
@@ -174,17 +180,16 @@ void main(void)
           Show_Wait_Symbol("On_IDLE ");
           BPSystemStatus = BP_ONLINE_IDLE;
         }
-        OLED_ShowString(0,30,32,"        ");  //8个空格，完全清空
+        HalOledShowString(0,34,32,"        ");  //8个空格，完全清空
         
         if(BP_High<100)
-          OLED_ShowNum(SPO2_Show2Num_Start_X,SPO2_Show2Num_Start_Y,BP_High,2,32);              
+          HalOledShowNum(SPO2_Show2Num_Start_X,SPO2_Show2Num_Start_Y,BP_High,2,32);              
         else
-          OLED_ShowNum(SPO2_Show3Num_Start_X,SPO2_Show3Num_Start_Y,BP_High,3,32);
+          HalOledShowNum(SPO2_Show3Num_Start_X,SPO2_Show3Num_Start_Y,BP_High,3,32);
         if(BP_Low < 100)
-          OLED_ShowNum(HR_Show2Num_Start_X,HR_Show2Num_Start_Y,BP_Low,2,32);              
+          HalOledShowNum(HR_Show2Num_Start_X,HR_Show2Num_Start_Y,BP_Low,2,32);              
         else
-          OLED_ShowNum(HR_Show3Num_Start_X ,HR_Show3Num_Start_Y,BP_Low,3,32);
-        OLED_Refresh_Gram();
+          HalOledShowNum(HR_Show3Num_Start_X ,HR_Show3Num_Start_Y,BP_Low,3,32);
       }
     } 
   }              
@@ -222,18 +227,17 @@ __interrupt void Timer_A (void)
        show=0;
        if(pressure<10)
        {
-         OLED_ShowNum(SPO2_Show2Num_Start_X+27,SPO2_Show2Num_Start_Y,0,1,32);
-         OLED_ShowNum(SPO2_Show2Num_Start_X+43,SPO2_Show2Num_Start_Y,0,1,32);
-         OLED_ShowNum(SPO2_Show2Num_Start_X+59,SPO2_Show2Num_Start_Y,pressure,1,32);
+         HalOledShowNum(SPO2_Show2Num_Start_X+27,SPO2_Show2Num_Start_Y,0,1,32);
+         HalOledShowNum(SPO2_Show2Num_Start_X+43,SPO2_Show2Num_Start_Y,0,1,32);
+         HalOledShowNum(SPO2_Show2Num_Start_X+59,SPO2_Show2Num_Start_Y,pressure,1,32);
        }
        else if((pressure<100)&&(pressure>9))
        {
-         OLED_ShowNum(SPO2_Show2Num_Start_X+27,SPO2_Show2Num_Start_Y,0,1,32);
-         OLED_ShowNum(SPO2_Show2Num_Start_X+43,SPO2_Show2Num_Start_Y,pressure,2,32);
+         HalOledShowNum(SPO2_Show2Num_Start_X+27,SPO2_Show2Num_Start_Y,0,1,32);
+         HalOledShowNum(SPO2_Show2Num_Start_X+43,SPO2_Show2Num_Start_Y,pressure,2,32);
        }
        else
-         OLED_ShowNum(SPO2_Show3Num_Start_X+27,SPO2_Show3Num_Start_Y,pressure,3,32);
-       OLED_Refresh_Gram();             
+         HalOledShowNum(SPO2_Show3Num_Start_X+27,SPO2_Show3Num_Start_Y,pressure,3,32);         
      }
      switch(step)
      {       
@@ -363,16 +367,15 @@ __interrupt void USART0_RX_ISR(void)
               if(BPSystemStatus == BP_ON_SLEEP)
               {
                 LPM0_EXIT;
-                OLED_SLEEP(0);
+                HalOledOnOff(HAL_OLED_MODE_ON);
               }
               BPSystemStatus = BP_ONLINE_MEASURE;
 
-              OLED_Clear();
-              OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-              OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");   
+              
+              HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+              HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");   
               Show_Wait_Symbol("On_Go   "); 
-              OLED_ShowString(0,30,32,"        ");  //8个空格，完全清空
-              OLED_Refresh_Gram();                
+              HalOledShowString(0,34,32,"        ");  //8个空格，完全清空               
               Start_BPMeasure();
             }
             break;
@@ -382,11 +385,10 @@ __interrupt void USART0_RX_ISR(void)
             {
               Stop_BPMeasure();
               BPSystemStatus = BP_ONLINE_IDLE;
-              OLED_Clear();
-              OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-              OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+              
+              HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+              HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
               Show_Wait_Symbol("On_IDLE ");    
-              OLED_Refresh_Gram();
             }
             break;
             
@@ -397,25 +399,21 @@ __interrupt void USART0_RX_ISR(void)
             if(BPSystemStatus == BP_ONLINE_MEASURE || BPSystemStatus == BP_OFFLINE_MEASURE) // 如果是正在在线或离线测量
             {
               Stop_BPMeasure();
-              OLED_Clear();
             }
             if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP) // 在线或离线睡眠状态
             {
               LPM0_EXIT;
-              OLED_SLEEP(0);      
+              HalOledOnOff(HAL_OLED_MODE_ON);      
             }
             BPSystemStatus = BP_FIND_NETWORK;
-            OLED_Clear();
-            OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-            OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+            HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+            HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
             Show_Wait_Symbol("FIND_NWK");    
-            OLED_Refresh_Gram();
             break;
             
           case END_DEVICE:  // 找到网络消息 只可能从FIND_NWK到这个状态
             BPSystemStatus = BP_ONLINE_IDLE;
             Show_Wait_Symbol("On_IDLE ");    
-            OLED_Refresh_Gram();
             break;
             
           case CLOSEING:   // 正在关闭网络消息
@@ -424,22 +422,20 @@ __interrupt void USART0_RX_ISR(void)
             if(BPSystemStatus == BP_ON_SLEEP) // 睡眠状态下关闭网络
             {
               LPM0_EXIT;
-              OLED_SLEEP(0);                 
+              HalOledOnOff(HAL_OLED_MODE_ON);                 
             }            
             // 在线空闲状态或寻找网络状态下下关闭网络
             // do nothing
             BPSystemStatus = BP_CLOSING;
-            OLED_Clear();
-            OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-            OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
-            Show_Wait_Symbol("CLOSING ");    
-            OLED_Refresh_Gram();           
+           
+            HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+            HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+            Show_Wait_Symbol("CLOSING ");              
             break;
             
           case CLOSE_NWK:
             BPSystemStatus = BP_OFFLINE_IDLE;
-            Show_Wait_Symbol("Off_IDLE");
-            OLED_Refresh_Gram();             
+            Show_Wait_Symbol("Off_IDLE");          
             break;
             
         }
@@ -464,7 +460,9 @@ __interrupt void Port_1(void)
     if(BPSystemStatus == BP_OFF_SLEEP) // 离线睡眠状态
       BPSystemStatus = BP_OFFLINE_IDLE;     
     if(BPSystemStatus == BP_ONLINE_IDLE) // 在线睡眠状态
-      BPSystemStatus = BP_ONLINE_IDLE;
+      BPSystemStatus = BP_ONLINE_IDLE;    
+    HalOledShowString(0,34,32,"        ");  //8个空格，完全清空  “后加的两句用于从休眠返回等待状态时显示空格”
+    Show_Wait_Symbol("Off_IDLE");
   }
   else                                                                   //处于等待状态或是测量状态有按键按下
   {
@@ -484,9 +482,10 @@ __interrupt void Port_1(void)
     {
       if(Press_type == 0)                                                //短按，开始测量
       {
-        OLED_Clear();
-        OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-        OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");
+       
+        HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+        HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");
+        //HalOledShowString(0,34,32,"        ");  //8个空格，完全清空
         if(BPSystemStatus == BP_OFFLINE_IDLE) // 离线空闲状态
         {
           Show_Wait_Symbol("Off_Go  ");
@@ -497,8 +496,7 @@ __interrupt void Port_1(void)
           Show_Wait_Symbol("On_Go   ");
           BPSystemStatus = BP_ONLINE_MEASURE;
         }
-        OLED_ShowString(0,30,32,"        ");  //8个空格，完全清空
-        OLED_Refresh_Gram();                
+        HalOledShowString(0,34,32,"        ");  //8个空格，完全清空             
         Start_BPMeasure();
       }
       else//长按，关屏
@@ -507,7 +505,7 @@ __interrupt void Port_1(void)
           BPSystemStatus = BP_OFF_SLEEP;
         if(BPSystemStatus == BP_ONLINE_IDLE) // 在线空闲状态
           BPSystemStatus = BP_ON_SLEEP;
-        OLED_Clear();
+       
       }
     }
     else if(BPSystemStatus == BP_OFFLINE_MEASURE || BPSystemStatus == BP_ONLINE_MEASURE)//处于在线或离线测量状态
@@ -515,9 +513,10 @@ __interrupt void Port_1(void)
       if(Press_type == 0)//短按，停止测量
       {
         Stop_BPMeasure();
-        OLED_Clear();
-        OLED_ShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-        OLED_ShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+       
+        HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
+        HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA"); 
+        HalOledShowString(0,34,32,"        ");  //8个空格，完全清空
         if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
         {
           Show_Wait_Symbol("Off_IDLE");
@@ -528,7 +527,6 @@ __interrupt void Port_1(void)
           Show_Wait_Symbol("On_IDLE ");
           BPSystemStatus = BP_ONLINE_IDLE;
         }
-        OLED_Refresh_Gram();
       }
       else//长按，关屏
       {
@@ -537,7 +535,7 @@ __interrupt void Port_1(void)
           BPSystemStatus = BP_OFF_SLEEP;
         if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
           BPSystemStatus = BP_ON_SLEEP;
-        OLED_Clear();
+       
       }
     }
   }
@@ -902,3 +900,22 @@ void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp)
   delay_ms(15);
   UART1_Send_Buffer(bufferSend,68);
 }
+
+void Show_Wait_Symbol(const char *p)
+{
+    HalOledShowString(SPO2_Symbol_Start_X,0,12,p);
+    HalOledShowString(SPO2_Symbol_Start_X+88,0,12,"mmHg");
+    HalOledShowWaitSymbol(SPO2_Wait_Symbol_Start_X,SPO2_Wait_Symbol_Start_Y,1);
+    HalOledShowWaitSymbol(SPO2_Wait_Symbol_Start_X+16,SPO2_Wait_Symbol_Start_Y,1);
+    HalOledShowWaitSymbol(SPO2_Wait_Symbol_Start_X+32,SPO2_Wait_Symbol_Start_Y,1);
+    HalOledShowWaitSymbol(HR_Wait_Symbol_Start_X,HR_Wait_Symbol_Start_Y,1);
+    HalOledShowWaitSymbol(HR_Wait_Symbol_Start_X+16,HR_Wait_Symbol_Start_Y,1);
+    HalOledShowWaitSymbol(HR_Wait_Symbol_Start_X+32,HR_Wait_Symbol_Start_Y,1);
+    
+    // 显示电量
+    //HalShowBattVol(BATTERY_MEASURE_SHOW);
+}
+
+
+
+

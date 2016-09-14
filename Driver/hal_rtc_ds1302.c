@@ -42,7 +42,7 @@
  *                                             INCLUDES
  ***************************************************************************************************/
 #include "hal_rtc_ds1302.h"
-#include  <msp430x14x.h>
+#include  <msp430f1611.h>
 /***************************************************************************************************
  *                                             CONSTANTS
  ***************************************************************************************************/
@@ -109,7 +109,7 @@ void HalRTCDS1302Work(uint8 DS1302Enable);
 
 bool HalRTCDS1302OK(void);
 
-void halMcuWaitUs(uint16 microSecs);
+void halMcuWaitUs_RTC(uint16 microSecs);
 
   
 /***************************************************************************************************
@@ -134,9 +134,9 @@ void halMcuWaitUs(uint16 microSecs);
 #define DS1302_CE_LOW()     P2OUT &= ~BIT5    
 
 /* ----------- delay ---------- */
-#define DS1302_WRITE_DELAY()  halMcuWaitUs(5);
-#define DS1302_READ_DELAY()   halMcuWaitUs(5);
-#define DS1302_CE_DELAY()     halMcuWaitUs(5);  
+#define DS1302_WRITE_DELAY()  halMcuWaitUs_RTC(5);
+#define DS1302_READ_DELAY()   halMcuWaitUs_RTC(5);
+#define DS1302_CE_DELAY()     halMcuWaitUs_RTC(5);  
   
 /**************************************************************************************************
  *                                        FUNCTIONS - API
@@ -690,7 +690,7 @@ void HalRTCStructInit(RTCStruct_t *RTCStruct,uint8 sec,uint8 min,uint8 hour,uint
 
 
 /**************************************************************************************************
- * @fn      halMcuWaitUs
+ * @fn      halMcuWaitUs_RTC
  *
  * @brief   wait for x us. @ 8MHz MCU clock it takes 8 "nop"s for 1 us delay.
  *
@@ -698,7 +698,7 @@ void HalRTCStructInit(RTCStruct_t *RTCStruct,uint8 sec,uint8 min,uint8 hour,uint
  *
  * @return  None
  **************************************************************************************************/
-void halMcuWaitUs(uint16 microSecs)
+void halMcuWaitUs_RTC(uint16 microSecs)
 {
   while(microSecs--)
   {

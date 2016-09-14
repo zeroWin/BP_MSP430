@@ -85,7 +85,6 @@ extern uint8 HalShowBattVol(uint8 fThreshold);
 
 extern void HalOledShowPowerSymbol(uint8 x,uint8 y,uint8 mode,uint8 power_num);
 
-extern void OLED_ShowString(UCHAR x,UCHAR y,UCHAR size,const UCHAR *p);
 #ifdef __cplusplus
 }
 #endif  
