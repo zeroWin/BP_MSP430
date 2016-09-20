@@ -83,7 +83,7 @@ void SendBP_HighAndLowoCC2530(uint16 BP_HIGH_temp,uint16 BP_LOW_temp);
 void SendDCAndACToSDcard(uint16 DC_temp,uint16 AC_temp);
 void GenericApp_GetWriteName(void);
 bool GenericApp_OpenDir(void);
-
+void SyncData(void);
 
 BPSystemStatus_t BPSystemStatus;
 uint16 writeNum;
@@ -143,12 +143,12 @@ void main(void)
       else                                     //等待15s，如果无操作则进入休眠状态
       {
         if(BPSystemStatus == BP_OFFLINE_IDLE) // 离线空闲状态
-          BPSystemStatus = BP_OFF_SLEEP;
+          BPSystemStatus = BP_OFFLINE_SLEEP;
         if(BPSystemStatus == BP_ONLINE_IDLE) // 在线空闲状态
-          BPSystemStatus = BP_ON_SLEEP;
+          BPSystemStatus = BP_ONLINE_SLEEP;
       }
     }
-    else if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP)       //进入睡眠状态
+    else if(BPSystemStatus == BP_OFFLINE_SLEEP || BPSystemStatus == BP_ONLINE_SLEEP)       //进入睡眠状态
     {
       HalOledOnOff(HAL_OLED_MODE_OFF);           //关闭显示器        
       _BIS_SR(LPM0_bits + GIE);                  //进入低功耗
@@ -200,7 +200,11 @@ void main(void)
         else
           HalOledShowNum(HR_Show3Num_Start_X ,HR_Show3Num_Start_Y,BP_Low,3,32);
       }
-    } 
+    }
+    else if(BPSystemStatus == BP_SYNC_DATA)
+    {
+      SyncData();
+    }
   }              
 }
 
@@ -373,9 +377,9 @@ __interrupt void USART0_RX_ISR(void)
         switch(controlMessage)
         {
           case START_MEASURE: //启动测量命令
-            if(BPSystemStatus == BP_ON_SLEEP || BPSystemStatus == BP_ONLINE_IDLE) // 处于睡眠或在线空闲状态
+            if(BPSystemStatus == BP_ONLINE_SLEEP || BPSystemStatus == BP_ONLINE_IDLE) // 处于睡眠或在线空闲状态
             {
-              if(BPSystemStatus == BP_ON_SLEEP)
+              if(BPSystemStatus == BP_ONLINE_SLEEP)
               {
                 LPM0_EXIT;
                 HalOledOnOff(HAL_OLED_MODE_ON);
@@ -399,11 +403,23 @@ __interrupt void USART0_RX_ISR(void)
               
               HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
               HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+              HalOledShowString(0,34,32,"        ");  //8个空格，完全清空    
               Show_Wait_Symbol("On_IDLE ");    
             }
             break;
             
           case SYNC_MEASURE: // 同步消息，暂不处理
+            if(BPSystemStatus == BP_ONLINE_SLEEP || BPSystemStatus == BP_ONLINE_IDLE) // 在线睡眠状态或在线空闲状态
+            {
+              if(BPSystemStatus == BP_ONLINE_SLEEP) // 处于睡眠状态先退出低功耗
+                LPM0_EXIT;
+              
+              BPSystemStatus = BP_SYNC_DATA;
+              
+              HalOledShowString(SPO2_Symbol_Start_X,0,12,"On_Sync ");
+              //打开显示器
+              HalOledOnOff(HAL_OLED_MODE_ON);
+            }
             break;
             
           case FIND_NWK:  // 正在找网消息
@@ -411,14 +427,15 @@ __interrupt void USART0_RX_ISR(void)
             {
               Stop_BPMeasure();
             }
-            if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP) // 在线或离线睡眠状态
+            if(BPSystemStatus == BP_OFFLINE_SLEEP || BPSystemStatus == BP_ONLINE_SLEEP) // 在线或离线睡眠状态
             {
               LPM0_EXIT;
               HalOledOnOff(HAL_OLED_MODE_ON);      
             }
             BPSystemStatus = BP_FIND_NETWORK;
             HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-            HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+            HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");
+            HalOledShowString(0,34,32,"        ");  //8个空格，完全清空 
             Show_Wait_Symbol("FIND_NWK");    
             break;
             
@@ -430,7 +447,7 @@ __interrupt void USART0_RX_ISR(void)
           case CLOSEING:   // 正在关闭网络消息
             if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态关闭网络
               Stop_BPMeasure();
-            if(BPSystemStatus == BP_ON_SLEEP) // 睡眠状态下关闭网络
+            if(BPSystemStatus == BP_ONLINE_SLEEP) // 睡眠状态下关闭网络
             {
               LPM0_EXIT;
               HalOledOnOff(HAL_OLED_MODE_ON);                 
@@ -440,7 +457,8 @@ __interrupt void USART0_RX_ISR(void)
             BPSystemStatus = BP_CLOSING;
            
             HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
-            HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
+            HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");
+            HalOledShowString(0,34,32,"        ");  //8个空格，完全清空 
             Show_Wait_Symbol("CLOSING ");              
             break;
             
@@ -465,15 +483,20 @@ __interrupt void Port_1(void)
 {    
   P1IE &= ~BIT3;                                                         //P1.3 interrupt DISABLE
   Device_waite_time1 = 0;                                                //等待状态计数值清0
-  if(BPSystemStatus == BP_OFF_SLEEP || BPSystemStatus == BP_ON_SLEEP)    //处于睡眠态，长按短按都是进入等待态
+  if(BPSystemStatus == BP_OFFLINE_SLEEP || BPSystemStatus == BP_ONLINE_SLEEP)    //处于睡眠态，长按短按都是进入等待态
   {
     LPM0_EXIT;
-    if(BPSystemStatus == BP_OFF_SLEEP) // 离线睡眠状态
-      BPSystemStatus = BP_OFFLINE_IDLE;     
-    if(BPSystemStatus == BP_ONLINE_IDLE) // 在线睡眠状态
-      BPSystemStatus = BP_ONLINE_IDLE;    
     HalOledShowString(0,34,32,"        ");  //8个空格，完全清空  “后加的两句用于从休眠返回等待状态时显示空格”
-    Show_Wait_Symbol("Off_IDLE");
+    if(BPSystemStatus == BP_OFFLINE_SLEEP) // 离线睡眠状态
+    {
+      BPSystemStatus = BP_OFFLINE_IDLE;
+      Show_Wait_Symbol("Off_IDLE");
+    }
+    if(BPSystemStatus == BP_ONLINE_SLEEP) // 在线睡眠状态
+    {
+      BPSystemStatus = BP_ONLINE_IDLE;
+      Show_Wait_Symbol("On_IDLE");
+    }
   }
   else                                                                   //处于等待状态或是测量状态有按键按下
   {
@@ -513,9 +536,9 @@ __interrupt void Port_1(void)
       else//长按，关屏
       {
         if(BPSystemStatus == BP_OFFLINE_IDLE) // 离线空闲状态
-          BPSystemStatus = BP_OFF_SLEEP;
+          BPSystemStatus = BP_OFFLINE_SLEEP;
         if(BPSystemStatus == BP_ONLINE_IDLE) // 在线空闲状态
-          BPSystemStatus = BP_ON_SLEEP;
+          BPSystemStatus = BP_ONLINE_SLEEP;
        
       }
     }
@@ -543,9 +566,9 @@ __interrupt void Port_1(void)
       {
         Stop_BPMeasure();
         if(BPSystemStatus == BP_OFFLINE_MEASURE) // 离线测量状态
-          BPSystemStatus = BP_OFF_SLEEP;
+          BPSystemStatus = BP_OFFLINE_SLEEP;
         if(BPSystemStatus == BP_ONLINE_MEASURE) // 在线测量状态
-          BPSystemStatus = BP_ON_SLEEP;
+          BPSystemStatus = BP_ONLINE_SLEEP;
        
       }
     }
@@ -805,13 +828,14 @@ void Init_Port4()
 *****************************************************************************/
 void Init_Port6()
 {
-  P6SEL |= 0x03;                    // Enable A/D channel inputs
+  P6SEL |= 0x07;                    // Enable A/D channel inputs
   ADC12CTL0 = ADC12ON+MSC+SHT0_2;  //+REFON+ REF2_5V;//+SHT0_8;//+REFON+ REF2_5V; 
                                         // Turn on ADC12, extend sampling time 
                                         // to avoid overflow of results
   ADC12CTL1 = SHP+CONSEQ_1;        // Use sampling timer, repeated sequence
   ADC12MCTL0 = INCH_0+SREF_0;      // ref+=AVcc, channel = A0
-  ADC12MCTL1 = INCH_1+EOS+SREF_0;  // ref+=AVcc, channel = A1
+  ADC12MCTL1 = INCH_1+SREF_0;  // ref+=AVcc, channel = A1
+  ADC12MCTL2 = INCH_2+EOS+SREF_0 ;   // ref+=AVcc, channel = A2
   //ADC12IE = 0x02;                // Enable ADC12IFG.3
   ADC12CTL0 |= ENC;                // Enable conversions
 }
@@ -1005,7 +1029,7 @@ bool GenericApp_OpenDir(void)
   uint8 *fn = 0;          // 长文件名
   
   // initilize pathname
-  strcpy(pathname,"0:S/");
+  strcpy(pathname,"0:B/");
   
   // 申请内存
   fddir = (DIR *)malloc(sizeof(DIR));
@@ -1030,7 +1054,7 @@ bool GenericApp_OpenDir(void)
   }
   
   // 打开源目录
-  res = f_opendir(fddir,"0:S");
+  res = f_opendir(fddir,"0:B");
 
   if(res == 0)  // 打开目录成功
   {
@@ -1061,4 +1085,77 @@ bool GenericApp_OpenDir(void)
   free(fddir);
   free(finfo);
   return TRUE;  
+}
+
+
+/*********************************************************************
+ * @fn      SyncData
+ *
+ * @brief   Sync data 一次同步一个文件
+ *
+ * @param  
+ *
+ * @return  
+ *
+ */
+void SyncData(void)
+{
+  uint8 *dataSendBuffer;
+  uint8 *dataSendBufferTemp;
+  uint8 i,j;
+  uint16 flagNum;
+  if(GenericApp_OpenDir() == TRUE) // 目录下有文件，发送文件
+  {
+    dataSendBuffer = malloc(sizeof(uint8)*512);
+    dataSendBufferTemp = malloc(sizeof(uint8)*68);
+    if(dataSendBuffer == NULL)
+    {
+      BPSystemStatus = BP_ONLINE_IDLE; // 同步结束
+      return;
+    }
+    if(dataSendBufferTemp == NULL)
+    {
+      free(dataSendBuffer);
+      BPSystemStatus = BP_ONLINE_IDLE; // 同步结束
+      return;
+    }
+    f_open(file,(char *)pathname,FA_OPEN_EXISTING | FA_READ); //  打开文件
+    f_read(file,dataSendBuffer, BP_WAVEFORM_READ_ONE_TIME,&br);
+    br = br/BP_WAVEFORM_SEND_ONE_TIME;
+    j = 0;
+    while(br != 0)
+    {
+      while(br != 0)
+      {
+        flagNum = j*64;
+        for(i = 0; i < 64; ++i)
+        {
+          dataSendBufferTemp[i] = dataSendBuffer[flagNum+i];
+        }
+        dataSendBufferTemp[i++] = 0x64;
+        dataSendBufferTemp[i++] = 0x00;
+        dataSendBufferTemp[i++] = 0x64;
+        dataSendBufferTemp[i++] = 0x00;
+        UART1_Send_Buffer(dataSendBufferTemp,68);
+        br--;
+        ++j;
+        halMcuWaitUs(50000);
+      }
+      f_read(file,dataSendBuffer, BP_WAVEFORM_READ_ONE_TIME,&br);
+      br = br/BP_WAVEFORM_SEND_ONE_TIME;
+      j = 0;
+    }
+    
+    // 发送完毕 关闭删除文件
+    f_close(file);
+    f_unlink((char *)pathname);
+    free(dataSendBuffer);
+    free(dataSendBufferTemp);
+  }
+  else // 没有文件了，发送同步结束命令
+  {
+    UART1_Send_Buffer(fileName,10);   
+    BPSystemStatus = BP_ONLINE_IDLE; // 同步结束
+    Show_Wait_Symbol("On_IDLE ");
+  }  
 }

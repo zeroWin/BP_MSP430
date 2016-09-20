@@ -6,76 +6,15 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\Driver\hal_BP_measure.c</file>
-      <file>$PROJ_DIR$\Driver\hal_battery_monitor.c</file>
-      <file>$PROJ_DIR$\Driver\hal_battery_monitor.h</file>
-      <file>$PROJ_DIR$\Driver\hal_BP_measure.h</file>
-      <file>$PROJ_DIR$\Driver\hal_delay.c</file>
-      <file>$PROJ_DIR$\Driver\hal_delay.h</file>
-      <file>$PROJ_DIR$\Driver\hal_oled.c</file>
-      <file>$PROJ_DIR$\Driver\hal_oled.h</file>
-      <file>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</file>
-      <file>$PROJ_DIR$\Driver\hal_rtc_ds1302.h</file>
-      <file>$PROJ_DIR$\Driver\hal_SDcard.c</file>
-      <file>$PROJ_DIR$\Driver\hal_SDcard.h</file>
-      <file>$PROJ_DIR$\Driver\hal_spi_user.c</file>
-      <file>$PROJ_DIR$\Driver\hal_spi_user.h</file>
-      <file>$PROJ_DIR$\Driver\hal_type.h</file>
-      <file>$PROJ_DIR$\Driver\hal_uart_cc2530.c</file>
-      <file>$PROJ_DIR$\Driver\hal_uart_cc2530.h</file>
-      <file>$PROJ_DIR$\Driver\OLED_FONT.h</file>
-      <file>$PROJ_DIR$\Driver\PingPongBuf.c</file>
-      <file>$PROJ_DIR$\Driver\PingPongBuf.h</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\option\ccsbcs.c</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\diskio.c</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\diskio.h</file>
-      <file>$PROJ_DIR$\Driver\FATFS\exfuns\exfuns.c</file>
-      <file>$PROJ_DIR$\Driver\FATFS\exfuns\exfuns.h</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\ff.c</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\ff.h</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\ffconf.h</file>
-      <file>$PROJ_DIR$\Driver\FATFS\src\integer.h</file>
-      <file>$PROJ_DIR$\main.c</file>
-      <file>$PROJ_DIR$\main.h</file>
-      <file>$PROJ_DIR$\typedefs.h</file>
-      <file>$PROJ_DIR$\OLED.c</file>
-      <file>$PROJ_DIR$\Debug\Obj\ccsbcs.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_battery_monitor.r43</file>
-      <file>$TOOLKIT_DIR$\inc\msp430f1611.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\OLED.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_SDcard.__cstat.et</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\PingPongBuf.r43</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_oled.__cstat.et</file>
-      <file>$PROJ_DIR$\Debug\Obj\OLED.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\math.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_rtc_ds1302.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\exfuns.__cstat.et</file>
-      <file>$PROJ_DIR$\Debug\Obj\ff.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_spi_user.__cstat.et</file>
-      <file>$TOOLKIT_DIR$\inc\in430.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\ff.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.__cstat.et</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_oled.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_battery_monitor.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\diskio.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\exfuns.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_delay.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_delay.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_SDcard.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\main.__cstat.et</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_spi_user.r43</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\hal_battery_monitor.__cstat.et</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_rtc_ds1302.__cstat.et</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_ecg_measure.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_battery_monitor.__cstat.et</file>
       <file>$PROJ_DIR$\Debug\Exe\blood pressure.d43</file>
       <file>$PROJ_DIR$\Debug\Obj\hal_SDcard.r43</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
@@ -111,17 +50,133 @@
       <file>$PROJ_DIR$\Debug\Obj\hal_oled.r43</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdarg.h</file>
       <file>$PROJ_DIR$\Debug\Obj\PingPongBuf.__cstat.et</file>
+      <file>$PROJ_DIR$\OLED.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\ccsbcs.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_battery_monitor.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\PingPongBuf.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_oled.__cstat.et</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_SDcard.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\OLED.r43</file>
+      <file>$TOOLKIT_DIR$\inc\msp430f1611.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\OLED.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\math.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_rtc_ds1302.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\exfuns.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\ff.pbi</file>
+      <file>$PROJ_DIR$\Driver\hal_BP_measure.c</file>
+      <file>$PROJ_DIR$\Driver\hal_battery_monitor.c</file>
+      <file>$PROJ_DIR$\Driver\hal_battery_monitor.h</file>
+      <file>$PROJ_DIR$\Driver\hal_BP_measure.h</file>
+      <file>$PROJ_DIR$\Driver\hal_delay.c</file>
+      <file>$PROJ_DIR$\Driver\hal_delay.h</file>
+      <file>$PROJ_DIR$\Driver\hal_oled.c</file>
+      <file>$PROJ_DIR$\Driver\hal_oled.h</file>
+      <file>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</file>
+      <file>$PROJ_DIR$\Driver\hal_rtc_ds1302.h</file>
+      <file>$PROJ_DIR$\Driver\hal_SDcard.c</file>
+      <file>$PROJ_DIR$\Driver\hal_SDcard.h</file>
+      <file>$PROJ_DIR$\Driver\hal_spi_user.c</file>
+      <file>$PROJ_DIR$\Driver\hal_spi_user.h</file>
+      <file>$PROJ_DIR$\Driver\hal_type.h</file>
+      <file>$PROJ_DIR$\Driver\hal_uart_cc2530.c</file>
+      <file>$PROJ_DIR$\Driver\hal_uart_cc2530.h</file>
+      <file>$PROJ_DIR$\Driver\OLED_FONT.h</file>
+      <file>$PROJ_DIR$\Driver\PingPongBuf.c</file>
+      <file>$PROJ_DIR$\Driver\PingPongBuf.h</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\option\ccsbcs.c</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\diskio.c</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\diskio.h</file>
+      <file>$PROJ_DIR$\Driver\FATFS\exfuns\exfuns.c</file>
+      <file>$PROJ_DIR$\Driver\FATFS\exfuns\exfuns.h</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\ff.c</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\ff.h</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\ffconf.h</file>
+      <file>$PROJ_DIR$\Driver\FATFS\src\integer.h</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\main.h</file>
+      <file>$PROJ_DIR$\typedefs.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_spi_user.__cstat.et</file>
+      <file>$TOOLKIT_DIR$\inc\in430.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\ff.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\diskio.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_battery_monitor.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_uart_cc2530.__cstat.et</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_BP_measure.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\hal_oled.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\exfuns.pbi</file>
     </outputs>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\blood pressure.d43</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 27 25 33 98 46 50 0 41 57 10 4 23 39 47 15</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_ecg_measure.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 35</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 7</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 36 83 78</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\OLED.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 52</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 26</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 54</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 28 97 55 56 59 21 38 13 24 61 17 11 31 95 18 69</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 69 97 11 95 59 17 56 18 55 21 38 28 31 13 24 61</file>
+        </tool>
+      </inputs>
+    </file>
     <file>
       <name>[ROOT_NODE]</name>
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 70</file>
+          <file> 9</file>
         </tool>
         <tool>
           <name>ULP430</name>
-          <file> 90</file>
+          <file> 29</file>
         </tool>
       </outputs>
     </file>
@@ -130,25 +185,25 @@
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 38</file>
+          <file> 50</file>
         </tool>
         <tool>
           <name>__cstat</name>
-          <file> 73</file>
+          <file> 12</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 57</file>
+          <file> 102</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 3 14 19</file>
+          <file> 67 78 83</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 3 14 19</file>
+          <file> 67 78 83</file>
         </tool>
       </inputs>
     </file>
@@ -157,11 +212,173 @@
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 34</file>
+          <file> 46</file>
         </tool>
         <tool>
           <name>__cstat</name>
-          <file> 67</file>
+          <file> 8</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 100</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 66 78 53 97 55 71 56 59 21 38 13 24 61 17 11 31</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 78 59 61 21 71 97 53 56 55 31 17 24 66 38 13 11</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_delay.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 0</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 1</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 69 95 53 97 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 95 97 53 55 69</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_oled.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 41</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 48</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 103</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 81 71 78 53 97 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 78 97 71 53 55 81</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 57</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 6</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 34</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 73 78 53 97 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 97 53 78 55 73</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_SDcard.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 10</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 51</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 75 78 53 97 55 77</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 78 77 53 97 75 55</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_spi_user.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 4</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 96</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 77 78 53 97 55</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 97 53 78 55 77</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\hal_uart_cc2530.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 23</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 101</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -171,105 +388,132 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 2 14 35 53 43 7 44 47 82 99 74 85 49 78 72 92</file>
+          <file> 80 78 53 97 55</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 14 47 49 82 7 53 35 44 43 92 78 85 2 99 74 72</file>
+          <file> 78 97 53 55 80</file>
         </tool>
       </inputs>
     </file>
     <file>
-      <name>$PROJ_DIR$\Driver\hal_delay.c</name>
+      <name>$PROJ_DIR$\Driver\PingPongBuf.c</name>
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 61</file>
+          <file> 47</file>
         </tool>
         <tool>
           <name>__cstat</name>
-          <file> 91</file>
+          <file> 43</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 62</file>
+          <file> 40</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 5 31 35 53 43</file>
+          <file> 83 78 5 59 38 13 24 61 17 11 49</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 31 53 35 43 5</file>
+          <file> 38 17 59 5 78 11 83 49 13 24 61</file>
         </tool>
       </inputs>
     </file>
     <file>
-      <name>$PROJ_DIR$\Driver\hal_oled.c</name>
+      <name>$PROJ_DIR$\Driver\FATFS\src\option\ccsbcs.c</name>
       <outputs>
         <tool>
           <name>ICC430</name>
-          <file> 102</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 41</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 56</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 17 7 14 35 53 43</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 14 53 7 35 43 17</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\hal_rtc_ds1302.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 45</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 68</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 95</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 9 14 35 53 43</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 53 35 14 43 9</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\hal_SDcard.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 71</file>
+          <file> 27</file>
         </tool>
         <tool>
           <name>__cstat</name>
           <file> 37</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 90 92 91</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 92 91 90</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\FATFS\src\diskio.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 25</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 32</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 99</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 75 78 53 97 55 86 92 5 59 38 13 24 61 17 11 49</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 78 38 5 49 86 53 97 59 13 11 75 55 92 17 24 61</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\FATFS\exfuns\exfuns.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 33</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 62</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 104</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 88 90 92 91 78 22 59 38 13 24 61 17 11 49 5</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49 11 91 13 59 90 5 38 22 78 92 17 24 61 88</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Driver\FATFS\src\ff.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 98</file>
+        </tool>
+        <tool>
+          <name>__cstat</name>
+          <file> 19</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -279,70 +523,16 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 11 14 35 53 43 13</file>
+          <file> 90 92 91 86 42 59 38 13 24 61 17 11</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 14 13 35 53 11 43</file>
+          <file> 92 59 13 61 86 42 91 24 90 38 17 11</file>
         </tool>
       </inputs>
     </file>
     <file>
-      <name>$PROJ_DIR$\Driver\hal_spi_user.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 65</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 52</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 77</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 13 14 35 53 43</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 53 35 14 43 13</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\hal_uart_cc2530.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 84</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 55</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 46</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 16 14 35 53 43</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 14 53 35 43 16</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\PingPongBuf.c</name>
+      <name>$PROJ_DIR$\main.c</name>
       <outputs>
         <tool>
           <name>ICC430</name>
@@ -350,88 +540,7 @@
         </tool>
         <tool>
           <name>__cstat</name>
-          <file> 104</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 101</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 19 14 66 47 99 74 85 49 78 72 40</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 99 78 47 66 14 72 19 40 74 85 49</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\FATFS\src\option\ccsbcs.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 88</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 98</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 33</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 26 28 27</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 28 27 26</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\FATFS\src\diskio.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 86</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 93</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 59</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 11 14 35 53 43 22 28 66 47 99 74 85 49 78 72 40</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 14 99 66 40 22 35 53 47 74 72 11 43 28 78 85 49</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\FATFS\exfuns\exfuns.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 94</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 50</file>
+          <file> 3</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -441,116 +550,11 @@
       <inputs>
         <tool>
           <name>ICC430</name>
-          <file> 24 26 28 27 14 83 47 99 74 85 49 78 72 40 66</file>
+          <file> 53 97 55 56 59 21 38 13 24 61 17 11 31 22 49 5 95 71 78 66 80 73 69 94 67 83 75 88 90 92 91</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 40 72 27 74 47 26 66 99 83 14 28 78 85 49 24</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\FATFS\src\ff.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 54</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 80</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 51</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 26 28 27 22 103 47 99 74 85 49 78 72</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 28 47 74 49 22 103 27 85 26 99 78 72</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\main.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 100</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 64</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 48</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 35 53 43 44 47 82 99 74 85 49 78 72 92 83 40 66 31 7 14 2 16 9 5 30 3 19 11 24 26 28 27</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\OLED.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 36</file>
-        </tool>
-        <tool>
-          <name>__cstat</name>
-          <file> 87</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 42</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 89 53 43 44 47 82 99 74 85 49 78 72 92 31 79 5</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 5 53 72 31 47 78 44 79 43 82 99 89 92 74 85 49</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Debug\Exe\blood pressure.d43</name>
-      <inputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 88 86 94 54 34 38 61 102 45 71 65 84 100 39 76</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Driver\hal_ecg_measure.c</name>
-      <outputs>
-        <tool>
-          <name>ICC430</name>
-          <file> 96</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 69</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>BICOMP</name>
-          <file> 97 19 14</file>
+          <file> 80 97 78 95 67 38 22 66 69 88 59 91 56 5 71 73 94 75 90 31 17 11 53 55 21 13 24 61 49 83 92</file>
         </tool>
       </inputs>
     </file>

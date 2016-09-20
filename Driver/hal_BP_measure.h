@@ -65,8 +65,8 @@ extern "C"
 #define BP_WAVEFORM_SAMPLER_NUM_PER_PACKET     34
 #define BP_WAVEFORM_SAMPLER_NUM_FOR_SD         256
   
-#define BP_WAVEFORM_READ_ONE_TIME              480
-#define BP_WAVEFORM_SEND_ONE_TIME              60
+#define BP_WAVEFORM_READ_ONE_TIME              512
+#define BP_WAVEFORM_SEND_ONE_TIME              64
 
 /* pingPong Buffer Choose */
 #define BP_BUFFER_FOR_ZIGBEE   0x00

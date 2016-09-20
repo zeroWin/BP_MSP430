@@ -109,8 +109,6 @@ void HalBattMonInit(void)
   BATTER_MONITOR_PORT_SEL |= (1 << BATTER_MONIROT_PIN);  // 设置端口为ADC功能
   BATTER_MONITOR_PORT_DIR &= ~(1 << BATTER_MONIROT_PIN); // 设置端口为输入
 
-  ADC12MCTL2 = SREF_0 + INCH_2; // 参考电压AVCC 3.3V，通道2
-  
  // HalGetBattVol();
 }
 
@@ -135,7 +133,7 @@ float HalGetBattVol(void)
   BATTER_MINITOR_ENABLE;    // Enable BATT_MON_EN, P0.1 high
   
   ADC12CTL0 |= ADC12SC; // 启动转换
-  while(!(ADC12IFG & BIT0)) // 等待转换结束
+  while(!(ADC12IFG & BIT2)) // 等待转换结束
   //max value = 0xfff/2, battery voltage = input voltage x 2
   //ref volage=3.3V
   tempVol = ADC12MEM2;
@@ -169,6 +167,9 @@ uint8 HalShowBattVol(uint8 fThreshold)
   
   if(fThreshold == BATTERY_MEASURE_SHOW)//测量
   {
+     fBattV = HalGetBattVol();
+     fBattV = HalGetBattVol();
+     fBattV = HalGetBattVol();
      fBattV = HalGetBattVol();
      fThreshold_temp = fBattV;
   }

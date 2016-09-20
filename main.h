@@ -71,8 +71,8 @@ typedef enum
   BP_FIND_NETWORK,            // 找网状态
   BP_SYNC_DATA,               // 同步数据状态
   BP_CLOSING,                 // 关闭网络状态
-  BP_ON_SLEEP,                // 在线睡眠状态
-  BP_OFF_SLEEP,               // 离线睡眠状态 
+  BP_ONLINE_SLEEP,                // 在线睡眠状态
+  BP_OFFLINE_SLEEP,               // 离线睡眠状态 
 } BPSystemStatus_t;
 
 
@@ -102,7 +102,6 @@ typedef enum
 
 #define Heart_Sympol_Start_X    65
 #define Heart_Sympol_Start_Y    0
-
 
 
 void Show_Wait_Symbol(const char *p);
