@@ -97,6 +97,7 @@ void main(void)
 {
   WDTCTL = WDTPW + WDTHOLD;                //关闭看门狗电路
   uint16 *dataTemp;
+  uint8 loopSDcard = 10;
   Init_Clock();
   Init_Port1();
   Init_Port2();
@@ -110,19 +111,20 @@ void main(void)
   // Initialize OLED
   HalOledInit();    
   
-  // SD卡初始化
-  while(SD_Initialize());
-  exfuns_init();
-  f_mount(0,fs);      // 挂载文件系统  
-  f_mkdir("0:B");     // 创建文件夹  
-  
   Init_Port6();                             
-  HalBattMonInit();   //Initialize Battery monitor
   
   VALVE_ON();
   PUMP_OFF();                              //通道1 控制气泵
   Init_TimerA();
   step=101;
+  // SD卡初始化
+  while(loopSDcard--)
+    SD_Initialize();
+  exfuns_init();
+  f_mount(0,fs);      // 挂载文件系统  
+  f_mkdir("0:B");     // 创建文件夹  
+  
+  HalBattMonInit();   //Initialize Battery monitor
   HalOledShowString(SPO2_Symbol_Start_X+16,SPO2_Symbol_Start_Y,16,"SYS");
   HalOledShowString(PR_Symbol_Start_X,PR_Symbol_Start_Y,16,"DIA");    
   Show_Wait_Symbol("Off_IDLE");    
